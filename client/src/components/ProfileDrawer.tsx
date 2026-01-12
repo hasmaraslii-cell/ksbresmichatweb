@@ -31,8 +31,8 @@ export function ProfileDrawer() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 1024 * 1024) {
-        alert("Dosya boyutu çok büyük (Maksimum 1MB)");
+      if (file.size > 20 * 1024 * 1024) {
+        alert("Dosya boyutu çok büyük (Maksimum 20MB)");
         return;
       }
       const reader = new FileReader();
