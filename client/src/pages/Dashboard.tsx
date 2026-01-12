@@ -140,12 +140,11 @@ export default function Dashboard() {
                <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                <div className="flex justify-between items-start relative z-10">
                  <ShieldAlert className="h-5 w-5 text-amber-600" />
-                 <span className="text-[10px] font-mono text-amber-900 animate-pulse">KRİTİK</span>
+                 <span className="text-[10px] font-mono text-amber-900 animate-pulse">SİSTEM_AKTİF</span>
                </div>
                <div className="mt-auto relative z-10">
-                 <h4 className="text-zinc-400 font-mono text-[10px] tracking-widest uppercase">Güvenlik Protokolü</h4>
-                 <div className="text-lg font-bold text-white mt-1">SEVİYE_3</div>
-                 <p className="text-[10px] text-zinc-500 font-mono mt-1 leading-tight uppercase">Bütünlük Kontrolü Tamamlandı</p>
+                 <h4 className="text-zinc-400 font-mono text-[10px] tracking-widest uppercase">Güvenlik Durumu</h4>
+                 <div className="text-lg font-bold text-white mt-1">KORUMALI</div>
                </div>
             </BentoCard>
           </div>

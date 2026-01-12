@@ -67,13 +67,24 @@ export async function registerRoutes(
     if (!req.isAuthenticated()) return res.status(401).send("Unauthorized");
     try {
       const updates = { ...req.body };
-      if (updates.password) {
+      // Always hash password if provided
+      if (updates.password && updates.password.trim() !== "") {
         updates.password = await hashPassword(updates.password);
+      } else {
+        delete updates.password;
       }
-      const updated = await storage.updateUser((req.user as any).id, updates);
-      res.json(updated);
+      
+      const userId = (req.user as any).id;
+      const updated = await storage.updateUser(userId, updates);
+      
+      // Update session user
+      req.login(updated, (err) => {
+        if (err) return res.status(500).send("Session update failed");
+        res.json(updated);
+      });
     } catch (err: any) {
-      res.status(400).send(err.message);
+      console.error("Profile update error:", err);
+      res.status(400).send(err.message || "Güncelleme başarısız");
     }
   });
 

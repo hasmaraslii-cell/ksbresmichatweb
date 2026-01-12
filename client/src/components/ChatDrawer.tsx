@@ -2,7 +2,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { MessageSquare, Send, Trash2, Undo2 } from "lucide-react";
+import { MessageSquare, Send, Trash2, Undo2, Image as ImageIcon } from "lucide-react";
 import { useChat } from "@/hooks/use-chat";
 import { useAuth } from "@/hooks/use-auth";
 import { useState, useRef, useEffect } from "react";
@@ -135,7 +135,7 @@ export function ChatDrawer() {
                 }}
               />
               <Button type="button" variant="ghost" size="icon" className="text-zinc-500 hover:text-white" onClick={() => document.getElementById('chat-image-upload')?.click()}>
-                <Send className="h-4 w-4 rotate-45" />
+                <ImageIcon className="h-4 w-4" />
               </Button>
               <Button type="submit" disabled={sendMessage.isPending} className="bg-zinc-800 hover:bg-zinc-700 text-white">
                 <Send className="h-4 w-4" />
