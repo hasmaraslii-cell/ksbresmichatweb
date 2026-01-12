@@ -128,10 +128,17 @@ export async function registerRoutes(
   });
 
   app.delete(api.chat.delete.path, async (req, res) => {
-    if (!req.isAuthenticated() || req.user.role !== 'admin') {
-      return res.status(401).send("Unauthorized");
+    if (!req.isAuthenticated()) return res.status(401).send("Unauthorized");
+    const id = parseInt(req.params.id);
+    const msg = await storage.getMessage(id);
+    if (!msg) return res.status(404).send("Message not found");
+
+    // Admins can delete any message, users can delete their own
+    if (msg.userId !== (req.user as any).id && (req.user as any).role !== 'admin') {
+      return res.status(403).send("Forbidden");
     }
-    await storage.deleteMessage(parseInt(req.params.id));
+
+    await storage.deleteMessage(id);
     res.json({ message: "Deleted" });
   });
 

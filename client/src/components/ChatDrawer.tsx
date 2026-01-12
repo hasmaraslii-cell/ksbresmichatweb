@@ -76,23 +76,27 @@ export function ChatDrawer() {
                           <img src={msg.imageUrl} alt="Chat" className="max-w-full rounded-sm border border-white/10 max-h-60 object-contain" />
                         )}
                       </div>
-                      {isAdmin && (
+                      {(isAdmin || msg.userId === user?.id) && (
                         <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 shrink-0">
                           {msg.isDeleted ? (
-                            <Button 
-                              variant="ghost" 
-                              size="icon" 
-                              className="h-6 w-6 text-zinc-500 hover:text-cyan-400"
-                              onClick={() => restoreMessage.mutate(msg.id)}
-                            >
-                              <Undo2 className="h-3 w-3" />
-                            </Button>
+                            isAdmin && (
+                              <Button 
+                                variant="ghost" 
+                                size="icon" 
+                                className="h-6 w-6 text-zinc-500 hover:text-cyan-400"
+                                onClick={() => restoreMessage.mutate(msg.id)}
+                                title="Mesajı Geri Getir"
+                              >
+                                <Undo2 className="h-3 w-3" />
+                              </Button>
+                            )
                           ) : (
                             <Button 
                               variant="ghost" 
                               size="icon" 
                               className="h-6 w-6 text-zinc-500 hover:text-red-400"
                               onClick={() => deleteMessage.mutate(msg.id)}
+                              title="Mesajı Sil"
                             >
                               <Trash2 className="h-3 w-3" />
                             </Button>

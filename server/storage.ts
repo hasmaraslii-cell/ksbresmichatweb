@@ -86,6 +86,11 @@ export class DatabaseStorage implements IStorage {
   async restoreMessage(id: number): Promise<void> {
     await db.update(messages).set({ isDeleted: false }).where(eq(messages.id, id));
   }
+
+  async getMessage(id: number): Promise<Message | undefined> {
+    const [msg] = await db.select().from(messages).where(eq(messages.id, id));
+    return msg;
+  }
 }
 
 export const storage = new DatabaseStorage();
