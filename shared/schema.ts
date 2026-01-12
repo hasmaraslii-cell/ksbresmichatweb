@@ -40,6 +40,8 @@ export const insertUserSchema = createInsertSchema(users).pick({
   password: true,
   displayName: true,
   avatarUrl: true,
+  rank: true,
+  role: true,
 }).extend({
   password: z.string().min(6).optional(),
 });

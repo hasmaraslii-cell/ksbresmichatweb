@@ -18,7 +18,7 @@ async function seedDatabase() {
       rank: "Kurucu",
       role: "admin",
       avatarUrl: "https://api.dicebear.com/7.x/bottts/svg?seed=Raith1905",
-    });
+    } as any);
     
     const yakefPass = await hashPassword("L3mAxIf$TR!x");
     await storage.createUser({
@@ -28,7 +28,7 @@ async function seedDatabase() {
       rank: "Başlider",
       role: "admin",
       avatarUrl: "https://api.dicebear.com/7.x/bottts/svg?seed=YAKEFBALL",
-    });
+    } as any);
   }
 }
 
