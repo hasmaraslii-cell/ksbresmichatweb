@@ -132,7 +132,11 @@ export function ChatDrawer() {
                     }
                     const reader = new FileReader();
                     reader.onloadend = () => {
-                      sendMessage.mutate({ content: input || "Fotoğraf paylaşıldı", imageUrl: reader.result as string });
+                      const base64String = reader.result as string;
+                      sendMessage.mutate({ 
+                        content: input || "Fotoğraf paylaşıldı", 
+                        imageUrl: base64String 
+                      });
                       setInput("");
                     };
                     reader.readAsDataURL(file);
