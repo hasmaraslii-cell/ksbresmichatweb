@@ -23,6 +23,19 @@ export function ChatDrawer() {
   const lastMessageId = useRef<number | null>(null);
   const [mentionSearch, setMentionSearch] = useState("");
   const [showMentions, setShowMentions] = useState(false);
+  const [hasPermission, setHasPermission] = useState(false);
+
+  // Notification permission logic
+  useEffect(() => {
+    if ("Notification" in window) {
+      setHasPermission(Notification.permission === "granted");
+      if (Notification.permission === "default") {
+        Notification.requestPermission().then(permission => {
+          setHasPermission(permission === "granted");
+        });
+      }
+    }
+  }, []);
 
   const filteredUsers = useMemo(() => {
     if (!mentionSearch || !users) return [];
@@ -54,12 +67,6 @@ export function ChatDrawer() {
 
   // Notification logic
   useEffect(() => {
-    if (Notification.permission === "default") {
-      Notification.requestPermission();
-    }
-  }, []);
-
-  useEffect(() => {
     if (messages && messages.length > 0) {
       const latestMsg = messages[messages.length - 1];
       if (lastMessageId.current !== null && latestMsg.id > lastMessageId.current && latestMsg.userId !== user?.id) {
@@ -70,16 +77,20 @@ export function ChatDrawer() {
         });
 
         // Browser Native Notification
-        if (Notification.permission === "granted" && document.hidden) {
-          new Notification(latestMsg.user.displayName || latestMsg.user.username, {
-            body: latestMsg.content,
-            icon: latestMsg.user.avatarUrl || "/favicon.png"
-          });
+        if (hasPermission && document.hidden) {
+          try {
+            new Notification(latestMsg.user.displayName || latestMsg.user.username, {
+              body: latestMsg.content,
+              icon: latestMsg.user.avatarUrl || "/favicon.png"
+            });
+          } catch (e) {
+            console.error("Notification error:", e);
+          }
         }
       }
       lastMessageId.current = latestMsg.id;
     }
-  }, [messages, user?.id, toast]);
+  }, [messages, user?.id, toast, hasPermission]);
 
   const isAdmin = user?.role === "admin";
 
