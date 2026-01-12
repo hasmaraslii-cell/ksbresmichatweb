@@ -33,24 +33,9 @@ export function ChatDrawer() {
     }
   }, [messages, user?.id, toast]);
 
-  const renderContent = (content: string) => {
-
-  // Auto-scroll to bottom
-  useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [messages]);
-
-  const handleSend = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!input.trim()) return;
-    await sendMessage.mutateAsync({ content: input });
-    setInput("");
-  };
-
   const isAdmin = user?.role === "admin";
 
+  const renderContent = (content: string) => {
     const urlRegex = /(https?:\/\/[^\s]+)/g;
     const mentionRegex = /(@\w+)/g;
 
@@ -79,6 +64,20 @@ export function ChatDrawer() {
       }
       return part;
     });
+  };
+
+  // Auto-scroll to bottom
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
+
+  const handleSend = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!input.trim()) return;
+    await sendMessage.mutateAsync({ content: input });
+    setInput("");
   };
 
   return (
