@@ -8,15 +8,21 @@ import { Button } from "@/components/ui/button";
 import { Terminal, ShieldAlert, Activity, Users } from "lucide-react";
 import logoImg from "/images/logo.png";
 import { RankBadge } from "@/components/RankBadge";
+import { useEffect } from "react";
 
 export default function Dashboard() {
   const { user, isLoading } = useAuth();
   const [, setLocation] = useLocation();
 
+  useEffect(() => {
+    if (!isLoading && !user) {
+      setLocation("/login");
+    }
+  }, [user, isLoading, setLocation]);
+
   if (isLoading) return <div className="min-h-screen bg-black flex items-center justify-center text-zinc-800 font-mono animate-pulse">SİSTEM_KAYNAKLARI_YÜKLENİYOR...</div>;
 
   if (!user) {
-    setLocation("/login");
     return null;
   }
 
