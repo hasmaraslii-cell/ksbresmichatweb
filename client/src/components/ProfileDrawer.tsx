@@ -31,6 +31,10 @@ export function ProfileDrawer() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      if (file.size > 1024 * 1024) {
+        alert("Dosya boyutu çok büyük (Maksimum 1MB)");
+        return;
+      }
       const reader = new FileReader();
       reader.onloadend = () => {
         form.setValue("avatarUrl", reader.result as string);
@@ -40,13 +44,18 @@ export function ProfileDrawer() {
   };
 
   async function onSubmit(data: z.infer<typeof profileSchema>) {
-    // Filter out empty strings to avoid sending them as updates
     const updates: any = {};
-    if (data.displayName) updates.displayName = data.displayName;
-    if (data.avatarUrl) updates.avatarUrl = data.avatarUrl;
-    if (data.password) updates.password = data.password;
+    if (data.displayName && data.displayName.trim() !== "") updates.displayName = data.displayName;
+    if (data.avatarUrl && data.avatarUrl.trim() !== "") updates.avatarUrl = data.avatarUrl;
+    if (data.password && data.password.trim() !== "") updates.password = data.password;
     
-    await updateProfile(updates);
+    if (Object.keys(updates).length === 0) return;
+    
+    try {
+      await updateProfile(updates);
+    } catch (err) {
+      // Error handled by hook toast
+    }
   }
 
   if (!user) return null;
