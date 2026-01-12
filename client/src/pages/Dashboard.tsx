@@ -81,20 +81,30 @@ export default function Dashboard() {
           </div>
 
           {/* Action Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto w-full">
             {user.role === 'admin' && (
-              <BentoCard className="col-span-1 md:col-span-2 flex items-center justify-between p-8 hover:bg-white/5 cursor-pointer border-l-4 border-l-red-900/50">
+              <BentoCard className="col-span-1 md:col-span-2 flex items-center justify-between p-6 hover:bg-white/5 cursor-pointer border border-white/5 bg-black/40 backdrop-blur-sm group relative overflow-hidden transition-all duration-500">
                  <Link href="/admin" className="absolute inset-0 z-10" />
-                 <div className="flex items-center gap-4">
-                   <div className="p-3 bg-red-950/20 rounded-sm">
+                 
+                 {/* Admin indicator line */}
+                 <div className="absolute left-0 top-0 bottom-0 w-1 bg-red-600 shadow-[0_0_15px_rgba(220,38,38,0.5)] group-hover:bg-red-500 transition-colors" />
+                 
+                 <div className="flex items-center gap-5">
+                   <div className="p-3 bg-red-950/20 rounded-md border border-red-900/30 group-hover:border-red-500/50 transition-colors">
                      <ShieldAlert className="h-6 w-6 text-red-500" />
                    </div>
                    <div className="text-left">
-                     <h3 className="text-lg font-mono text-red-100 tracking-wider">KOMUTA MERKEZİ</h3>
-                     <p className="text-xs text-red-500/60 font-mono mt-1">KISITLI ALAN // SADECE ADMİNLER</p>
+                     <h3 className="text-lg font-mono text-white tracking-wider group-hover:text-red-100 transition-colors">KOMUTA MERKEZİ</h3>
+                     <p className="text-[10px] text-red-500/70 font-mono mt-1 uppercase tracking-[0.2em]">Kısıtlı Alan // Admin Erişimi</p>
                    </div>
                  </div>
-                 <div className="text-red-500/40 text-xs font-mono tracking-widest">ERİŞİM_ONAYLANDI</div>
+                 
+                 <div className="hidden sm:flex flex-col items-end gap-1">
+                   <div className="text-red-500/40 text-[9px] font-mono tracking-[0.3em] animate-pulse">SİSTEM_AKTİF</div>
+                   <div className="h-1 w-12 bg-red-900/30 rounded-full overflow-hidden">
+                     <div className="h-full bg-red-600 w-1/2 animate-[shimmer_2s_infinite]" />
+                   </div>
+                 </div>
               </BentoCard>
             )}
           </div>

@@ -2,19 +2,38 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { MessageSquare, Send, Trash2, Undo2, Image as ImageIcon } from "lucide-react";
+import { MessageSquare, Send, Trash2, Undo2, Image as ImageIcon, Bell } from "lucide-react";
 import { useChat } from "@/hooks/use-chat";
 import { useAuth } from "@/hooks/use-auth";
 import { useState, useRef, useEffect } from "react";
 import { format } from "date-fns";
 import { UserAvatar } from "./UserAvatar";
 import { RankBadge } from "./RankBadge";
+import { useToast } from "@/hooks/use-toast";
 
 export function ChatDrawer() {
   const { messages, sendMessage, deleteMessage, restoreMessage } = useChat();
   const { user } = useAuth();
   const [input, setInput] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
+  const lastMessageId = useRef<number | null>(null);
+
+  // Notification logic
+  useEffect(() => {
+    if (messages && messages.length > 0) {
+      const latestMsg = messages[messages.length - 1];
+      if (lastMessageId.current !== null && latestMsg.id > lastMessageId.current && latestMsg.userId !== user?.id) {
+        toast({
+          title: latestMsg.user.displayName || latestMsg.user.username,
+          description: latestMsg.content.substring(0, 50) + (latestMsg.content.length > 50 ? "..." : ""),
+        });
+      }
+      lastMessageId.current = latestMsg.id;
+    }
+  }, [messages, user?.id, toast]);
+
+  const renderContent = (content: string) => {
 
   // Auto-scroll to bottom
   useEffect(() => {
@@ -31,6 +50,36 @@ export function ChatDrawer() {
   };
 
   const isAdmin = user?.role === "admin";
+
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    const mentionRegex = /(@\w+)/g;
+
+    const parts = content.split(/((?:https?:\/\/[^\s]+)|(?:@\w+))/g);
+    
+    return parts.map((part, i) => {
+      if (part.match(urlRegex)) {
+        return (
+          <a 
+            key={i} 
+            href={part} 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="text-cyan-400 hover:underline break-all"
+          >
+            {part}
+          </a>
+        );
+      }
+      if (part.match(mentionRegex)) {
+        return (
+          <span key={i} className="text-yellow-500 font-bold">
+            {part}
+          </span>
+        );
+      }
+      return part;
+    });
+  };
 
   return (
     <Sheet>
@@ -73,15 +122,16 @@ export function ChatDrawer() {
                       <div className="flex-1 min-w-0">
                         {msg.content && (
                           <div className={`text-sm text-zinc-300 break-words overflow-wrap-anywhere whitespace-pre-wrap leading-relaxed ${msg.isDeleted ? 'line-through text-red-900' : ''}`}>
-                            {msg.content}
+                            {renderContent(msg.content)}
                           </div>
                         )}
                         {msg.imageUrl && (
-                          <div className="relative mt-1 w-full">
+                          <div className="relative mt-2 w-full max-w-[300px]">
                             <img 
                               src={msg.imageUrl} 
                               alt="Paylaşılan Görsel" 
-                              className="max-w-full rounded-sm border border-white/10 max-h-60 object-contain bg-zinc-900/50 block"
+                              className="w-full h-auto rounded-sm border border-white/10 max-h-60 object-contain bg-zinc-900/50 block hover:scale-105 transition-transform cursor-pointer"
+                              onClick={() => window.open(msg.imageUrl!, '_blank')}
                               onLoad={(e) => {
                                 e.currentTarget.scrollIntoView({ behavior: 'smooth', block: 'end' });
                               }}
