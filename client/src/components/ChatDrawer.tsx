@@ -5,19 +5,52 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { MessageSquare, Send, Trash2, Undo2, Image as ImageIcon, Bell } from "lucide-react";
 import { useChat } from "@/hooks/use-chat";
 import { useAuth } from "@/hooks/use-auth";
-import { useState, useRef, useEffect } from "react";
+import { useUsers } from "@/hooks/use-users";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { format } from "date-fns";
 import { UserAvatar } from "./UserAvatar";
 import { RankBadge } from "./RankBadge";
 import { useToast } from "@/hooks/use-toast";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 export function ChatDrawer() {
   const { messages, sendMessage, deleteMessage, restoreMessage } = useChat();
   const { user } = useAuth();
+  const { users } = useUsers();
   const [input, setInput] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   const lastMessageId = useRef<number | null>(null);
+  const [mentionSearch, setMentionSearch] = useState("");
+  const [showMentions, setShowMentions] = useState(false);
+
+  const filteredUsers = useMemo(() => {
+    if (!mentionSearch || !users) return [];
+    return users.filter(u => 
+      u.username.toLowerCase().includes(mentionSearch.toLowerCase()) ||
+      (u.displayName && u.displayName.toLowerCase().includes(mentionSearch.toLowerCase()))
+    ).slice(0, 5);
+  }, [mentionSearch, users]);
+
+  const handleInputChange = (val: string) => {
+    setInput(val);
+    const lastAt = val.lastIndexOf("@");
+    if (lastAt !== -1 && (lastAt === 0 || val[lastAt - 1] === " ")) {
+      const search = val.slice(lastAt + 1).split(" ")[0];
+      setMentionSearch(search);
+      setShowMentions(true);
+    } else {
+      setShowMentions(false);
+    }
+  };
+
+  const insertMention = (username: string) => {
+    const lastAt = input.lastIndexOf("@");
+    const before = input.slice(0, lastAt);
+    const after = input.slice(lastAt + 1).split(" ").slice(1).join(" ");
+    setInput(before + "@" + username + " " + after);
+    setShowMentions(false);
+  };
 
   // Notification logic
   useEffect(() => {
@@ -120,7 +153,7 @@ export function ChatDrawer() {
                     <div className="flex items-start gap-2 w-full group/msg-content">
                       <div className="flex-1 min-w-0">
                         {msg.content && (
-                          <div className={`text-sm text-zinc-300 break-words overflow-wrap-anywhere whitespace-pre-wrap leading-relaxed ${msg.isDeleted ? 'line-through text-red-900' : ''}`}>
+                          <div className={`text-sm text-zinc-300 break-all whitespace-pre-wrap leading-relaxed ${msg.isDeleted ? 'line-through text-red-900' : ''}`}>
                             {renderContent(msg.content)}
                           </div>
                         )}
@@ -139,7 +172,7 @@ export function ChatDrawer() {
                         )}
                       </div>
                       {(isAdmin || msg.userId === user?.id) && (
-                        <div className="flex-none shrink-0 self-start">
+                        <div className="flex-none shrink-0 self-start opacity-0 group-hover:opacity-100 transition-opacity">
                           {!msg.isDeleted ? (
                             <Button 
                               variant="ghost" 
@@ -180,11 +213,26 @@ export function ChatDrawer() {
           </div>
         </ScrollArea>
 
-        <div className="p-4 border-t border-white/10 bg-zinc-950/50">
+        <div className="p-4 border-t border-white/10 bg-zinc-950/50 relative">
+          {showMentions && filteredUsers.length > 0 && (
+            <div className="absolute bottom-full left-4 right-4 mb-2 bg-zinc-900 border border-white/10 rounded-md shadow-xl overflow-hidden z-50">
+              {filteredUsers.map(u => (
+                <button
+                  key={u.id}
+                  className="w-full px-4 py-2 text-left text-sm hover:bg-white/5 flex items-center gap-2 border-b border-white/5 last:border-0"
+                  onClick={() => insertMention(u.username)}
+                >
+                  <UserAvatar user={u} className="h-5 w-5" />
+                  <span className="text-zinc-300 font-mono">{u.displayName || u.username}</span>
+                  <span className="text-[10px] text-zinc-600 ml-auto">@{u.username}</span>
+                </button>
+              ))}
+            </div>
+          )}
           <form onSubmit={handleSend} className="flex gap-2">
             <Input 
               value={input}
-              onChange={(e) => setInput(e.target.value)}
+              onChange={(e) => handleInputChange(e.target.value)}
               placeholder="Mesaj dizisini girin..." 
               className="bg-black border-zinc-800 text-green-500 font-mono placeholder:text-zinc-700 focus:border-green-900 focus:ring-1 focus:ring-green-900/20"
             />
