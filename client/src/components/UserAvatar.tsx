@@ -19,12 +19,12 @@ export function UserAvatar({ user, className }: UserAvatarProps) {
     .toUpperCase();
 
   return (
-    <Avatar className={cn("h-10 w-10 border border-white/10 rounded-full", className)}>
+    <Avatar className={cn("h-10 w-10 border border-white/10 rounded-full bg-zinc-900", className)}>
       <AvatarImage 
         src={user.avatarUrl || undefined} 
-        className="object-cover w-full h-full rounded-full block" 
+        className="object-cover w-full h-full rounded-full" 
       />
-      <AvatarFallback className="bg-zinc-900 text-zinc-400 font-mono text-xs rounded-full flex items-center justify-center">
+      <AvatarFallback className="bg-zinc-900 text-zinc-400 font-mono text-xs rounded-full flex items-center justify-center w-full h-full">
         {initials}
       </AvatarFallback>
     </Avatar>

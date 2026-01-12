@@ -55,7 +55,7 @@ export function ChatDrawer() {
               return (
                 <div key={msg.id} className={`group flex gap-3 ${msg.isDeleted ? 'opacity-50' : ''}`}>
                   <div className="flex-shrink-0 pt-1">
-                    <UserAvatar user={msg.user} className="h-8 w-8 rounded-full ring-1 ring-white/10" />
+                    <UserAvatar user={msg.user} className="h-8 w-8 rounded-full ring-1 ring-white/10 overflow-hidden" />
                   </div>
                   <div className="flex-1 min-w-0 flex flex-col">
                     <div className="flex items-baseline gap-2 mb-1">
@@ -67,7 +67,7 @@ export function ChatDrawer() {
                         {format(new Date(msg.createdAt!), "HH:mm:ss")}
                       </span>
                     </div>
-                    <div className="flex items-start justify-between gap-2">
+                    <div className="flex items-start justify-between gap-2 min-h-[40px]">
                       <div className="flex flex-col gap-2 flex-1 min-w-0">
                         {msg.content && (
                           <p className={`text-sm text-zinc-300 break-words whitespace-pre-wrap leading-relaxed ${msg.isDeleted ? 'line-through text-red-900' : ''}`}>
@@ -81,7 +81,6 @@ export function ChatDrawer() {
                               alt="Paylaşılan Görsel" 
                               className="max-w-full rounded-sm border border-white/10 max-h-80 object-contain bg-zinc-900/50"
                               onLoad={(e) => {
-                                // Scroll to bottom when image loads
                                 e.currentTarget.scrollIntoView({ behavior: 'smooth', block: 'end' });
                               }}
                             />
@@ -89,35 +88,37 @@ export function ChatDrawer() {
                         )}
                       </div>
                       {(isAdmin || msg.userId === user?.id) && (
-                        <div className="flex items-center gap-1 shrink-0 ml-2">
-                          {msg.isDeleted ? (
-                            isAdmin && (
-                              <Button 
-                                variant="ghost" 
-                                size="icon" 
-                                className="h-6 w-6 text-zinc-500 hover:text-cyan-400"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  restoreMessage.mutate(msg.id);
-                                }}
-                                title="Mesajı Geri Getir"
-                              >
-                                <Undo2 className="h-3 w-3" />
-                              </Button>
-                            )
-                          ) : (
+                        <div className="flex items-center gap-2 shrink-0 ml-2">
+                          {!msg.isDeleted ? (
                             <Button 
                               variant="ghost" 
                               size="icon" 
-                              className="h-6 w-6 text-zinc-500 hover:text-red-400"
+                              className="h-8 w-8 text-zinc-500 hover:text-red-500 hover:bg-red-500/10 transition-colors"
                               onClick={(e) => {
+                                e.preventDefault();
                                 e.stopPropagation();
                                 deleteMessage.mutate(msg.id);
                               }}
                               title="Mesajı Sil"
                             >
-                              <Trash2 className="h-3 w-3" />
+                              <Trash2 className="h-4 w-4" />
                             </Button>
+                          ) : (
+                            isAdmin && (
+                              <Button 
+                                variant="ghost" 
+                                size="icon" 
+                                className="h-8 w-8 text-zinc-500 hover:text-cyan-400 hover:bg-cyan-400/10 transition-colors"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  restoreMessage.mutate(msg.id);
+                                }}
+                                title="Mesajı Geri Getir"
+                              >
+                                <Undo2 className="h-4 w-4" />
+                              </Button>
+                            )
                           )}
                         </div>
                       )}
