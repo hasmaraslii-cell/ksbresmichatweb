@@ -44,7 +44,7 @@ export async function registerRoutes(
 
   // Users
   app.get(api.users.list.path, async (req, res) => {
-    if (!req.isAuthenticated() || req.user.role !== 'admin') {
+    if (!req.isAuthenticated() || (req.user as any).role !== 'admin') {
       return res.status(401).send("Unauthorized");
     }
     const users = await storage.getAllUsers();
@@ -52,7 +52,7 @@ export async function registerRoutes(
   });
 
   app.patch(api.users.toggleDelete.path, async (req, res) => {
-    if (!req.isAuthenticated() || req.user.role !== 'admin') {
+    if (!req.isAuthenticated() || (req.user as any).role !== 'admin') {
       return res.status(401).send("Unauthorized");
     }
     const userId = parseInt(req.params.id);
@@ -99,7 +99,7 @@ export async function registerRoutes(
   app.get(api.chat.list.path, async (req, res) => {
     if (!req.isAuthenticated()) return res.status(401).send("Unauthorized");
     
-    if (req.user.role === 'admin') {
+    if ((req.user as any).role === 'admin') {
        // Admins see everything for moderation
        const messages = await storage.getAllMessagesIncludingDeleted();
        res.json(messages);
@@ -143,7 +143,7 @@ export async function registerRoutes(
   });
 
   app.patch(api.chat.restore.path, async (req, res) => {
-    if (!req.isAuthenticated() || req.user.role !== 'admin') {
+    if (!req.isAuthenticated() || (req.user as any).role !== 'admin') {
       return res.status(401).send("Unauthorized");
     }
     await storage.restoreMessage(parseInt(req.params.id));
