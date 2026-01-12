@@ -43,7 +43,7 @@ export function ChatDrawer() {
         <SheetHeader className="p-6 border-b border-white/10 bg-zinc-950/50">
           <SheetTitle className="font-mono tracking-widest text-cyan-500 flex items-center gap-2">
             <span className="inline-block w-2 h-2 bg-cyan-500 animate-pulse rounded-full"></span>
-            KÜRESEL_İLETİŞİM_HATTI
+            SOHBET
           </SheetTitle>
         </SheetHeader>
 
@@ -57,7 +57,7 @@ export function ChatDrawer() {
                   <div className="flex-shrink-0 pt-1">
                     <UserAvatar user={msg.user} className="h-8 w-8 rounded-none border-none ring-1 ring-white/10" />
                   </div>
-                  <div className="flex-1 min-w-0">
+                  <div className="flex-1 min-w-0 flex flex-col">
                     <div className="flex items-baseline gap-2 mb-1">
                       <span className="text-cyan-600 font-bold text-xs truncate">
                         {msg.user.displayName || msg.user.username}
@@ -67,34 +67,35 @@ export function ChatDrawer() {
                         {format(new Date(msg.createdAt!), "HH:mm:ss")}
                       </span>
                     </div>
-                    <p className={`text-sm text-zinc-300 break-words leading-relaxed ${msg.isDeleted ? 'line-through text-red-900' : ''}`}>
-                      {msg.content}
-                    </p>
-                  </div>
-                  
-                  {isAdmin && (
-                    <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-start gap-1">
-                      {msg.isDeleted ? (
-                        <Button 
-                          variant="ghost" 
-                          size="icon" 
-                          className="h-6 w-6 text-zinc-500 hover:text-cyan-400"
-                          onClick={() => restoreMessage.mutate(msg.id)}
-                        >
-                          <Undo2 className="h-3 w-3" />
-                        </Button>
-                      ) : (
-                        <Button 
-                          variant="ghost" 
-                          size="icon" 
-                          className="h-6 w-6 text-zinc-500 hover:text-red-400"
-                          onClick={() => deleteMessage.mutate(msg.id)}
-                        >
-                          <Trash2 className="h-3 w-3" />
-                        </Button>
+                    <div className="flex items-start justify-between gap-2">
+                      <p className={`text-sm text-zinc-300 break-words whitespace-pre-wrap leading-relaxed flex-1 ${msg.isDeleted ? 'line-through text-red-900' : ''}`}>
+                        {msg.content}
+                      </p>
+                      {isAdmin && (
+                        <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 shrink-0">
+                          {msg.isDeleted ? (
+                            <Button 
+                              variant="ghost" 
+                              size="icon" 
+                              className="h-6 w-6 text-zinc-500 hover:text-cyan-400"
+                              onClick={() => restoreMessage.mutate(msg.id)}
+                            >
+                              <Undo2 className="h-3 w-3" />
+                            </Button>
+                          ) : (
+                            <Button 
+                              variant="ghost" 
+                              size="icon" 
+                              className="h-6 w-6 text-zinc-500 hover:text-red-400"
+                              onClick={() => deleteMessage.mutate(msg.id)}
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </Button>
+                          )}
+                        </div>
                       )}
                     </div>
-                  )}
+                  </div>
                 </div>
               );
             })}
