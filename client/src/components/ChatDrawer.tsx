@@ -54,28 +54,30 @@ export function ChatDrawer() {
 
               return (
                 <div key={msg.id} className={`group flex gap-3 ${msg.isDeleted ? 'opacity-50' : ''}`}>
-                  <div className="flex-shrink-0 pt-1">
-                    <UserAvatar user={msg.user} className="h-8 w-8 rounded-full ring-1 ring-white/10 overflow-hidden" />
+                  <div className="flex-none w-8">
+                    <UserAvatar user={msg.user} className="h-8 w-8 rounded-full ring-1 ring-white/10 overflow-hidden shrink-0" />
                   </div>
-                  <div className="flex-1 min-w-0 flex flex-col">
-                    <div className="flex items-baseline gap-2 mb-1">
-                      <span className="text-cyan-600 font-bold text-xs truncate">
-                        {msg.user.displayName || msg.user.username}
-                      </span>
-                      <RankBadge rank={msg.user.rank} />
-                      <span className="text-[10px] text-zinc-600">
+                  <div className="flex-1 min-w-0 flex flex-col overflow-hidden">
+                    <div className="flex items-baseline justify-between gap-2 mb-1">
+                      <div className="flex items-baseline gap-2 min-w-0 flex-1">
+                        <span className="text-cyan-600 font-bold text-xs truncate">
+                          {msg.user.displayName || msg.user.username}
+                        </span>
+                        <RankBadge rank={msg.user.rank} />
+                      </div>
+                      <span className="text-[10px] text-zinc-600 flex-none">
                         {format(new Date(msg.createdAt!), "HH:mm:ss")}
                       </span>
                     </div>
-                    <div className="flex items-start justify-between gap-2 min-h-[40px]">
-                      <div className="flex flex-col gap-2 flex-1 min-w-0">
+                    <div className="flex items-start gap-3 w-full">
+                      <div className="flex-1 min-w-0">
                         {msg.content && (
                           <p className={`text-sm text-zinc-300 break-words whitespace-pre-wrap leading-relaxed ${msg.isDeleted ? 'line-through text-red-900' : ''}`}>
                             {msg.content}
                           </p>
                         )}
                         {msg.imageUrl && (
-                          <div className="relative mt-1 group/img">
+                          <div className="relative mt-1 group/img w-full">
                             <img 
                               src={msg.imageUrl} 
                               alt="Paylaşılan Görsel" 
@@ -88,7 +90,7 @@ export function ChatDrawer() {
                         )}
                       </div>
                       {(isAdmin || msg.userId === user?.id) && (
-                        <div className="flex items-center gap-2 shrink-0 ml-2">
+                        <div className="flex-none shrink-0 self-start">
                           {!msg.isDeleted ? (
                             <Button 
                               variant="ghost" 
