@@ -38,24 +38,24 @@ export default function Admin() {
             </Button>
           </Link>
           <div>
-            <h1 className="text-2xl font-bold tracking-[0.2em] text-white">COMMAND_CENTER</h1>
-            <p className="text-xs text-red-500 uppercase tracking-widest">Authorized Personnel: {user.username}</p>
+            <h1 className="text-xl md:text-2xl font-bold tracking-[0.2em] text-white uppercase">KOMUTA_MERKEZİ</h1>
+            <p className="text-[10px] text-red-500 uppercase tracking-widest">Yetkili Personel: {user.username}</p>
           </div>
         </div>
 
         <Tabs defaultValue="personnel" className="w-full">
-          <TabsList className="bg-black border border-white/10 p-1 mb-6 rounded-none w-full justify-start h-auto">
+          <TabsList className="bg-black border border-white/10 p-1 mb-6 rounded-none w-full justify-start h-auto flex-wrap">
             <TabsTrigger 
               value="personnel"
-              className="data-[state=active]:bg-white/10 data-[state=active]:text-white text-zinc-500 rounded-none px-6 py-3 text-xs tracking-widest uppercase"
+              className="data-[state=active]:bg-white/10 data-[state=active]:text-white text-zinc-500 rounded-none px-4 md:px-6 py-2 md:py-3 text-[10px] md:text-xs tracking-widest uppercase flex-1 md:flex-none"
             >
-              Personnel Database
+              Personel Veritabanı
             </TabsTrigger>
             <TabsTrigger 
               value="intelligence"
-              className="data-[state=active]:bg-white/10 data-[state=active]:text-white text-zinc-500 rounded-none px-6 py-3 text-xs tracking-widest uppercase"
+              className="data-[state=active]:bg-white/10 data-[state=active]:text-white text-zinc-500 rounded-none px-4 md:px-6 py-2 md:py-3 text-[10px] md:text-xs tracking-widest uppercase flex-1 md:flex-none"
             >
-              Recovered Intel ({deletedMessages.length})
+              Kurtarılan Veriler ({deletedMessages.length})
             </TabsTrigger>
           </TabsList>
 

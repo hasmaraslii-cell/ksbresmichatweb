@@ -1,6 +1,6 @@
 import { db } from "./db";
 import { users, messages, type User, type InsertUser, type Message, type InsertMessage } from "@shared/schema";
-import { eq, desc, asc } from "drizzle-orm";
+import { eq, desc, asc, and } from "drizzle-orm";
 
 export interface IStorage {
   // User operations
@@ -40,7 +40,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getAllUsers(): Promise<User[]> {
-    return await db.select().from(users).orderBy(desc(users.createdAt));
+    return await db.select().from(users).where(eq(users.isDeleted, false)).orderBy(desc(users.createdAt));
   }
 
   async getMessages(): Promise<(Message & { user: User })[]> {
@@ -55,7 +55,7 @@ export class DatabaseStorage implements IStorage {
   async getAllMessagesIncludingDeleted(): Promise<(Message & { user: User })[]> {
     return await db.query.messages.findMany({
       with: { user: true },
-      orderBy: [desc(messages.createdAt)],
+      orderBy: [asc(messages.createdAt)],
       limit: 200
     });
   }

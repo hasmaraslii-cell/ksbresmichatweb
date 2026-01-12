@@ -15,6 +15,18 @@ export const errorSchemas = {
 
 export const api = {
   auth: {
+    register: {
+      method: 'POST' as const,
+      path: '/api/register',
+      input: z.object({
+        username: z.string(),
+        password: z.string(),
+      }),
+      responses: {
+        201: z.custom<typeof users.$inferSelect>(),
+        400: errorSchemas.validation,
+      },
+    },
     login: {
       method: 'POST' as const,
       path: '/api/login',

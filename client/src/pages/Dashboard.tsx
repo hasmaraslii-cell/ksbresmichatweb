@@ -13,7 +13,7 @@ export default function Dashboard() {
   const { user, isLoading } = useAuth();
   const [, setLocation] = useLocation();
 
-  if (isLoading) return <div className="min-h-screen bg-black flex items-center justify-center text-zinc-800 font-mono animate-pulse">LOADING_SYSTEM_RESOURCES...</div>;
+  if (isLoading) return <div className="min-h-screen bg-black flex items-center justify-center text-zinc-800 font-mono animate-pulse">SİSTEM_KAYNAKLARI_YÜKLENİYOR...</div>;
 
   if (!user) {
     setLocation("/login");
@@ -26,13 +26,13 @@ export default function Dashboard() {
       <div className="fixed inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:100px_100px] pointer-events-none" />
       
       {/* Header / Nav */}
-      <header className="fixed top-0 left-0 right-0 z-50 p-6 flex justify-between items-start">
+      <header className="fixed top-0 left-0 right-0 z-50 p-4 md:p-6 flex justify-between items-start">
         <div className="flex items-center gap-4">
            {/* Profile Drawer Trigger is inside the component */}
            <ProfileDrawer />
-           <div className="hidden md:block">
-             <div className="text-xs font-mono text-zinc-500">OPERATOR</div>
-             <div className="text-sm font-bold tracking-wider text-zinc-300">{user.username}</div>
+           <div className="hidden sm:block">
+             <div className="text-[10px] md:text-xs font-mono text-zinc-500 uppercase tracking-widest">OPERATÖR</div>
+             <div className="text-xs md:text-sm font-bold tracking-wider text-zinc-300">{user.username}</div>
            </div>
         </div>
 
@@ -84,11 +84,11 @@ export default function Dashboard() {
                      <ShieldAlert className="h-6 w-6 text-red-500" />
                    </div>
                    <div className="text-left">
-                     <h3 className="text-lg font-mono text-red-100 tracking-wider">COMMAND CENTER</h3>
-                     <p className="text-xs text-red-500/60 font-mono mt-1">RESTRICTED AREA // ADMIN EYES ONLY</p>
+                     <h3 className="text-lg font-mono text-red-100 tracking-wider">KOMUTA MERKEZİ</h3>
+                     <p className="text-xs text-red-500/60 font-mono mt-1">KISITLI ALAN // SADECE ADMİNLER</p>
                    </div>
                  </div>
-                 <div className="text-red-500/40 text-xs font-mono tracking-widest">ACCESS_GRANTED</div>
+                 <div className="text-red-500/40 text-xs font-mono tracking-widest">ERİŞİM_ONAYLANDI</div>
               </BentoCard>
             )}
 
@@ -98,19 +98,19 @@ export default function Dashboard() {
                  <div className="h-1.5 w-1.5 bg-green-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.6)]" />
                </div>
                <div className="mt-auto">
-                 <h4 className="text-zinc-400 font-mono text-xs tracking-widest uppercase">System Status</h4>
-                 <div className="text-2xl font-bold text-white mt-1">ONLINE</div>
+                 <h4 className="text-zinc-400 font-mono text-[10px] tracking-widest uppercase">Sistem Durumu</h4>
+                 <div className="text-xl md:text-2xl font-bold text-white mt-1">ÇEVRİMİÇİ</div>
                </div>
             </BentoCard>
 
-            <BentoCard className="flex flex-col gap-4 min-h-[160px]">
+            <BentoCard className="flex flex-col gap-4 min-h-[140px] md:min-h-[160px]">
                <div className="flex justify-between items-start">
                  <Users className="h-5 w-5 text-purple-600" />
                  <RankBadge rank={user.rank} />
                </div>
                <div className="mt-auto">
-                 <h4 className="text-zinc-400 font-mono text-xs tracking-widest uppercase">Your Rank</h4>
-                 <div className="text-2xl font-bold text-white mt-1">{user.rank || "ADAY"}</div>
+                 <h4 className="text-zinc-400 font-mono text-[10px] tracking-widest uppercase">Rütbeniz</h4>
+                 <div className="text-xl md:text-2xl font-bold text-white mt-1 uppercase">{user.rank || "ADAY"}</div>
                </div>
             </BentoCard>
           </div>
@@ -119,14 +119,16 @@ export default function Dashboard() {
       </main>
 
       {/* Footer Navigation Button - instead of hamburger */}
-      <div className="fixed bottom-8 left-0 right-0 flex justify-center z-40 pointer-events-none">
-        <Button 
-          className="pointer-events-auto bg-black/80 backdrop-blur-md border border-white/10 text-zinc-400 hover:text-white hover:border-cyan-500/50 hover:bg-black px-8 py-6 font-mono tracking-[0.2em] text-xs transition-all duration-300 shadow-2xl"
-          onClick={() => window.location.reload()} // Simplified for now, could open a mega-menu
-        >
-          KONTROL PANELİ
-        </Button>
-      </div>
+      {user?.role !== 'admin' && (
+        <div className="fixed bottom-8 left-0 right-0 flex justify-center z-40 pointer-events-none">
+          <Button 
+            className="pointer-events-auto bg-black/80 backdrop-blur-md border border-white/10 text-zinc-400 hover:text-white hover:border-cyan-500/50 hover:bg-black px-8 py-6 font-mono tracking-[0.2em] text-xs transition-all duration-300 shadow-2xl"
+            onClick={() => window.location.reload()}
+          >
+            KONTROL PANELİ
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

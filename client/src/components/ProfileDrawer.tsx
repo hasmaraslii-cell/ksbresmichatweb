@@ -11,9 +11,9 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Settings, LogOut, Save } from "lucide-react";
 
 const profileSchema = z.object({
-  displayName: z.string().min(2, "Name too short").optional().or(z.literal("")),
-  avatarUrl: z.string().url("Must be a valid URL").optional().or(z.literal("")),
-  password: z.string().min(6, "Password too short").optional().or(z.literal("")),
+  displayName: z.string().min(2, "İsim çok kısa").optional().or(z.literal("")),
+  avatarUrl: z.string().optional().or(z.literal("")),
+  password: z.string().min(6, "Parola çok kısa").optional().or(z.literal("")),
 });
 
 export function ProfileDrawer() {
@@ -27,6 +27,17 @@ export function ProfileDrawer() {
       password: "",
     },
   });
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        form.setValue("avatarUrl", reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   async function onSubmit(data: z.infer<typeof profileSchema>) {
     // Filter out empty strings to avoid sending them as updates
@@ -47,9 +58,9 @@ export function ProfileDrawer() {
           <Settings className="h-5 w-5" />
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="w-[400px] border-r border-white/10 bg-black/95 text-white sm:w-[540px]">
+      <SheetContent side="left" className="w-full border-r border-white/10 bg-black/95 text-white sm:w-[500px] h-[100dvh] overflow-y-auto">
         <SheetHeader className="mb-8 border-b border-white/10 pb-4">
-          <SheetTitle className="font-mono tracking-widest text-white">PERSONNEL FILE: {user.username}</SheetTitle>
+          <SheetTitle className="font-mono tracking-widest text-white">PERSONEL DOSYASI: {user.username}</SheetTitle>
         </SheetHeader>
 
         <div className="flex flex-col gap-8">
@@ -57,7 +68,7 @@ export function ProfileDrawer() {
             <UserAvatar user={user} className="h-20 w-20" />
             <div className="space-y-1">
               <h2 className="text-xl font-bold font-mono tracking-wide text-white">{user.displayName || user.username}</h2>
-              <p className="text-xs text-zinc-500 font-mono uppercase tracking-widest">{user.rank || "Unknown"}</p>
+              <p className="text-xs text-zinc-500 font-mono uppercase tracking-widest">{user.rank || "Bilinmiyor"}</p>
             </div>
           </div>
 
@@ -68,7 +79,7 @@ export function ProfileDrawer() {
                 name="displayName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-zinc-400 font-mono text-xs uppercase">Display Name</FormLabel>
+                    <FormLabel className="text-zinc-400 font-mono text-xs uppercase">Görünen Ad</FormLabel>
                     <FormControl>
                       <Input {...field} className="bg-zinc-900/50 border-zinc-800 text-white font-mono focus:border-cyan-900" />
                     </FormControl>
@@ -77,26 +88,22 @@ export function ProfileDrawer() {
                 )}
               />
 
-              <FormField
-                control={form.control}
-                name="avatarUrl"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-zinc-400 font-mono text-xs uppercase">Avatar URL</FormLabel>
-                    <FormControl>
-                      <Input {...field} className="bg-zinc-900/50 border-zinc-800 text-white font-mono focus:border-cyan-900" placeholder="https://..." />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <div className="space-y-2">
+                <Label className="text-zinc-400 font-mono text-xs uppercase">Profil Resmi</Label>
+                <Input 
+                  type="file" 
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  className="bg-zinc-900/50 border-zinc-800 text-white font-mono focus:border-cyan-900 cursor-pointer"
+                />
+              </div>
 
               <FormField
                 control={form.control}
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-zinc-400 font-mono text-xs uppercase">Update Password</FormLabel>
+                    <FormLabel className="text-zinc-400 font-mono text-xs uppercase">Şifreyi Güncelle</FormLabel>
                     <FormControl>
                       <Input {...field} type="password" className="bg-zinc-900/50 border-zinc-800 text-white font-mono focus:border-cyan-900" placeholder="••••••" />
                     </FormControl>
@@ -107,7 +114,7 @@ export function ProfileDrawer() {
 
               <Button type="submit" className="w-full bg-cyan-950/50 text-cyan-400 hover:bg-cyan-900/50 border border-cyan-900/50 font-mono uppercase tracking-widest">
                 <Save className="mr-2 h-4 w-4" />
-                Update Record
+                KAYDI GÜNCELLE
               </Button>
             </form>
           </Form>
@@ -119,7 +126,7 @@ export function ProfileDrawer() {
               className="w-full bg-red-950/20 text-red-500 hover:bg-red-950/40 border border-red-900/30 font-mono uppercase tracking-widest"
             >
               <LogOut className="mr-2 h-4 w-4" />
-              Terminate Session
+              OTURUMU SONLANDIR
             </Button>
           </div>
         </div>

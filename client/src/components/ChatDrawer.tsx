@@ -39,16 +39,16 @@ export function ChatDrawer() {
           <MessageSquare className="h-5 w-5" />
         </Button>
       </SheetTrigger>
-      <SheetContent side="right" className="w-[400px] border-l border-white/10 bg-black/95 text-white sm:w-[600px] flex flex-col p-0">
+      <SheetContent side="right" className="w-full border-l border-white/10 bg-black/95 text-white sm:w-[500px] flex flex-col p-0 h-[100dvh]">
         <SheetHeader className="p-6 border-b border-white/10 bg-zinc-950/50">
           <SheetTitle className="font-mono tracking-widest text-cyan-500 flex items-center gap-2">
             <span className="inline-block w-2 h-2 bg-cyan-500 animate-pulse rounded-full"></span>
-            GLOBAL_COMMS_LINK
+            KÜRESEL_İLETİŞİM_HATTI
           </SheetTitle>
         </SheetHeader>
 
-        <ScrollArea className="flex-1 p-6 bg-black/80 font-mono">
-          <div className="space-y-4">
+        <ScrollArea className="flex-1 p-4 bg-black/80 font-mono">
+          <div className="flex flex-col gap-4">
             {messages?.map((msg) => {
               if (msg.isDeleted && !isAdmin) return null;
 
@@ -107,7 +107,7 @@ export function ChatDrawer() {
             <Input 
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Enter message sequence..." 
+              placeholder="Mesaj dizisini girin..." 
               className="bg-black border-zinc-800 text-green-500 font-mono placeholder:text-zinc-700 focus:border-green-900 focus:ring-1 focus:ring-green-900/20"
             />
             <Button type="submit" disabled={sendMessage.isPending} className="bg-zinc-800 hover:bg-zinc-700 text-white">

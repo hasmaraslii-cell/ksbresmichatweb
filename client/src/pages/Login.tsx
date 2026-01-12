@@ -10,15 +10,20 @@ import { motion } from "framer-motion";
 import logoImg from "/images/logo.png";
 
 export default function Login() {
+  const [isRegister, setIsRegister] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const { login, isLoggingIn } = useAuth();
+  const { login, register, isLoggingIn, isRegistering } = useAuth();
   const [, setLocation] = useLocation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await login({ username, password });
+      if (isRegister) {
+        await register({ username, password });
+      } else {
+        await login({ username, password });
+      }
       setLocation("/");
     } catch (err) {
       // Error handled by hook toast
@@ -56,13 +61,17 @@ export default function Login() {
             </div>
           </motion.div>
           
-          <h1 className="text-2xl font-mono text-zinc-500 tracking-[0.3em] uppercase mb-2">Identify</h1>
-          <p className="text-xs font-mono text-cyan-900/50 uppercase tracking-widest">Restricted Access // Auth Required</p>
+          <h1 className="text-2xl font-mono text-zinc-500 tracking-[0.3em] uppercase mb-2">
+            {isRegister ? "KAYIT OL" : "KİMLİK DOĞRULA"}
+          </h1>
+          <p className="text-xs font-mono text-cyan-900/50 uppercase tracking-widest">
+            {isRegister ? "BİRLİĞE KATIL" : "YETKİLİ ERİŞİM // KİMLİK GEREKLİ"}
+          </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
-            <Label className="text-xs font-mono uppercase text-zinc-600 ml-1">Username</Label>
+            <Label className="text-xs font-mono uppercase text-zinc-600 ml-1">KULLANICI ADI</Label>
             <Input 
               value={username} 
               onChange={(e) => setUsername(e.target.value)}
@@ -71,7 +80,7 @@ export default function Login() {
           </div>
           
           <div className="space-y-2">
-            <Label className="text-xs font-mono uppercase text-zinc-600 ml-1">Passkey</Label>
+            <Label className="text-xs font-mono uppercase text-zinc-600 ml-1">PAROLA</Label>
             <Input 
               type="password"
               value={password}
@@ -80,13 +89,24 @@ export default function Login() {
             />
           </div>
 
-          <Button 
-            type="submit" 
-            disabled={isLoggingIn}
-            className="w-full h-12 bg-white/5 hover:bg-white/10 text-zinc-300 border border-white/5 font-mono uppercase tracking-widest text-xs transition-all duration-300 hover:border-cyan-500/30 hover:text-cyan-400 hover:shadow-[0_0_20px_rgba(0,255,255,0.1)]"
-          >
-            {isLoggingIn ? "Authenticating..." : "Initialize Session"}
-          </Button>
+          <div className="space-y-4">
+            <Button 
+              type="submit" 
+              disabled={isLoggingIn || isRegistering}
+              className="w-full h-12 bg-white/5 hover:bg-white/10 text-zinc-300 border border-white/5 font-mono uppercase tracking-widest text-xs transition-all duration-300 hover:border-cyan-500/30 hover:text-cyan-400 hover:shadow-[0_0_20px_rgba(0,255,255,0.1)]"
+            >
+              {isLoggingIn || isRegistering ? "DOĞRULANIYOR..." : (isRegister ? "KAYDI TAMAMLA" : "OTURUMU BAŞLAT")}
+            </Button>
+
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => setIsRegister(!isRegister)}
+              className="w-full text-zinc-500 hover:text-zinc-300 font-mono text-[10px] uppercase tracking-widest"
+            >
+              {isRegister ? "ZATEN HESABIN VAR MI? GİRİŞ YAP" : "HESABIN YOK MU? KAYIT OL"}
+            </Button>
+          </div>
         </form>
       </motion.div>
     </div>
