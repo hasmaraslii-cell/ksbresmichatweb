@@ -65,8 +65,16 @@ export async function registerRoutes(
 
   app.patch(api.auth.updateProfile.path, async (req, res) => {
     if (!req.isAuthenticated()) return res.status(401).send("Unauthorized");
-    const updated = await storage.updateUser(req.user.id, req.body);
-    res.json(updated);
+    try {
+      const updates = { ...req.body };
+      if (updates.password) {
+        updates.password = await hashPassword(updates.password);
+      }
+      const updated = await storage.updateUser((req.user as any).id, updates);
+      res.json(updated);
+    } catch (err: any) {
+      res.status(400).send(err.message);
+    }
   });
 
   // Chat
@@ -86,7 +94,18 @@ export async function registerRoutes(
 
   app.post(api.chat.send.path, async (req, res) => {
     if (!req.isAuthenticated()) return res.status(401).send("Unauthorized");
-    const message = await storage.createMessage(req.user.id, req.body);
+    
+    // Spam check
+    const lastMessages = await storage.getMessages();
+    const userLastMessages = lastMessages.filter(m => m.userId === (req.user as any).id).slice(-3);
+    if (userLastMessages.length === 3 && userLastMessages.every(m => m.content === req.body.content)) {
+      return res.status(429).send("Spam engellendi. Lütfen farklı bir mesaj gönderin.");
+    }
+
+    const message = await storage.createMessage((req.user as any).id, {
+      content: req.body.content,
+      imageUrl: req.body.imageUrl,
+    });
     res.status(201).json(message);
   });
 

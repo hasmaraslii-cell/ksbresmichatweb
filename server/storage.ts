@@ -35,7 +35,8 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateUser(id: number, updates: Partial<User>): Promise<User> {
-    const [user] = await db.update(users).set(updates).where(eq(users.id, id)).returning();
+    const { id: _, ...updateData } = updates as any;
+    const [user] = await db.update(users).set(updateData).where(eq(users.id, id)).returning();
     return user;
   }
 
@@ -62,7 +63,8 @@ export class DatabaseStorage implements IStorage {
 
   async createMessage(userId: number, message: InsertMessage): Promise<Message> {
     const [msg] = await db.insert(messages).values({
-      ...message,
+      content: message.content,
+      imageUrl: message.imageUrl,
       userId,
     }).returning();
     return msg;

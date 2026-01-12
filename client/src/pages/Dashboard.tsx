@@ -92,25 +92,57 @@ export default function Dashboard() {
               </BentoCard>
             )}
 
-            <BentoCard className="flex flex-col gap-4 min-h-[160px]">
-               <div className="flex justify-between items-start">
+            <BentoCard className="flex flex-col gap-4 min-h-[160px] group relative overflow-hidden">
+               <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+               <div className="flex justify-between items-start relative z-10">
                  <Activity className="h-5 w-5 text-cyan-600" />
                  <div className="h-1.5 w-1.5 bg-green-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.6)]" />
                </div>
-               <div className="mt-auto">
+               <div className="mt-auto relative z-10">
                  <h4 className="text-zinc-400 font-mono text-[10px] tracking-widest uppercase">Sistem Durumu</h4>
                  <div className="text-xl md:text-2xl font-bold text-white mt-1">ÇEVRİMİÇİ</div>
+                 <div className="text-[10px] text-zinc-500 font-mono mt-1 uppercase">Gecikme: 24ms</div>
                </div>
             </BentoCard>
 
-            <BentoCard className="flex flex-col gap-4 min-h-[140px] md:min-h-[160px]">
-               <div className="flex justify-between items-start">
+            <BentoCard className="flex flex-col gap-4 min-h-[160px] group relative overflow-hidden">
+               <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+               <div className="flex justify-between items-start relative z-10">
                  <Users className="h-5 w-5 text-purple-600" />
                  <RankBadge rank={user.rank} />
                </div>
-               <div className="mt-auto">
+               <div className="mt-auto relative z-10">
                  <h4 className="text-zinc-400 font-mono text-[10px] tracking-widest uppercase">Rütbeniz</h4>
                  <div className="text-xl md:text-2xl font-bold text-white mt-1 uppercase">{user.rank || "ADAY"}</div>
+                 <div className="text-[10px] text-zinc-500 font-mono mt-1 uppercase">Deneyim: %45</div>
+               </div>
+            </BentoCard>
+
+            <BentoCard className="flex flex-col gap-4 min-h-[160px] group relative overflow-hidden border-l-4 border-l-cyan-900/30">
+               <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+               <div className="flex justify-between items-start relative z-10">
+                 <Terminal className="h-5 w-5 text-zinc-500" />
+                 <span className="text-[10px] font-mono text-zinc-600">v1.0.4-LTS</span>
+               </div>
+               <div className="mt-auto relative z-10">
+                 <h4 className="text-zinc-400 font-mono text-[10px] tracking-widest uppercase">Hızlı İşlemler</h4>
+                 <div className="flex gap-2 mt-2">
+                    <Button variant="ghost" size="sm" className="h-7 text-[10px] font-mono border border-white/5 hover:border-cyan-500/30 px-2">LOGLAR</Button>
+                    <Button variant="ghost" size="sm" className="h-7 text-[10px] font-mono border border-white/5 hover:border-cyan-500/30 px-2">TARAMA</Button>
+                 </div>
+               </div>
+            </BentoCard>
+
+            <BentoCard className="flex flex-col gap-4 min-h-[160px] group relative overflow-hidden border-l-4 border-l-amber-900/30">
+               <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+               <div className="flex justify-between items-start relative z-10">
+                 <ShieldAlert className="h-5 w-5 text-amber-600" />
+                 <span className="text-[10px] font-mono text-amber-900 animate-pulse">KRİTİK</span>
+               </div>
+               <div className="mt-auto relative z-10">
+                 <h4 className="text-zinc-400 font-mono text-[10px] tracking-widest uppercase">Güvenlik Protokolü</h4>
+                 <div className="text-lg font-bold text-white mt-1">SEVİYE_3</div>
+                 <p className="text-[10px] text-zinc-500 font-mono mt-1 leading-tight uppercase">Bütünlük Kontrolü Tamamlandı</p>
                </div>
             </BentoCard>
           </div>

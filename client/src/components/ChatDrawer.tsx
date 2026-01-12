@@ -68,9 +68,14 @@ export function ChatDrawer() {
                       </span>
                     </div>
                     <div className="flex items-start justify-between gap-2">
-                      <p className={`text-sm text-zinc-300 break-words whitespace-pre-wrap leading-relaxed flex-1 ${msg.isDeleted ? 'line-through text-red-900' : ''}`}>
-                        {msg.content}
-                      </p>
+                      <div className="flex flex-col gap-2 flex-1 min-w-0">
+                        <p className={`text-sm text-zinc-300 break-words whitespace-pre-wrap leading-relaxed ${msg.isDeleted ? 'line-through text-red-900' : ''}`}>
+                          {msg.content}
+                        </p>
+                        {msg.imageUrl && (
+                          <img src={msg.imageUrl} alt="Chat" className="max-w-full rounded-sm border border-white/10 max-h-60 object-contain" />
+                        )}
+                      </div>
                       {isAdmin && (
                         <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 shrink-0">
                           {msg.isDeleted ? (
@@ -111,9 +116,20 @@ export function ChatDrawer() {
               placeholder="Mesaj dizisini girin..." 
               className="bg-black border-zinc-800 text-green-500 font-mono placeholder:text-zinc-700 focus:border-green-900 focus:ring-1 focus:ring-green-900/20"
             />
-            <Button type="submit" disabled={sendMessage.isPending} className="bg-zinc-800 hover:bg-zinc-700 text-white">
-              <Send className="h-4 w-4" />
-            </Button>
+            <div className="flex gap-2">
+              <Button type="button" variant="ghost" size="icon" className="text-zinc-500 hover:text-white" onClick={() => {
+                const url = prompt("Fotoğraf URL'sini girin:");
+                if (url) {
+                  sendMessage.mutate({ content: input || "Fotoğraf paylaşıldı", imageUrl: url });
+                  setInput("");
+                }
+              }}>
+                <MessageSquare className="h-4 w-4" />
+              </Button>
+              <Button type="submit" disabled={sendMessage.isPending} className="bg-zinc-800 hover:bg-zinc-700 text-white">
+                <Send className="h-4 w-4" />
+              </Button>
+            </div>
           </form>
         </div>
       </SheetContent>

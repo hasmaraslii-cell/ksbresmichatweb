@@ -19,6 +19,7 @@ export const messages = pgTable("messages", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").references(() => users.id),
   content: text("content").notNull(),
+  imageUrl: text("image_url"),
   isDeleted: boolean("is_deleted").default(false),
   createdAt: timestamp("created_at").defaultNow(),
 });
@@ -39,10 +40,13 @@ export const insertUserSchema = createInsertSchema(users).pick({
   password: true,
   displayName: true,
   avatarUrl: true,
+}).extend({
+  password: z.string().min(6).optional(),
 });
 
 export const insertMessageSchema = createInsertSchema(messages).pick({
   content: true,
+  imageUrl: true,
 });
 
 export type User = typeof users.$inferSelect;
