@@ -64,9 +64,6 @@ export default function Login() {
           <h1 className="text-2xl font-mono text-zinc-500 tracking-[0.3em] uppercase mb-2">
             {isRegister ? "KAYIT OL" : "GİRİŞ YAP"}
           </h1>
-          <p className="text-xs font-mono text-cyan-900/50 uppercase tracking-widest">
-            {isRegister ? "BİRLİĞE KATIL" : "YETKİLİ ERİŞİM // KİMLİK GEREKLİ"}
-          </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
