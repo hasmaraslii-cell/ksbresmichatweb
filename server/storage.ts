@@ -35,15 +35,17 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateUser(id: number, updates: Partial<User>): Promise<User> {
-    const { id: _, password, ...updateData } = updates as any;
-    
-    // Create the safe update object
-    const finalUpdate: any = { ...updateData };
-    if (password) {
-      finalUpdate.password = password;
-    }
+    const updateData = { ...updates };
+    // Remove auto-generated fields if they leaked in
+    delete (updateData as any).id;
+    delete (updateData as any).createdAt;
 
-    const [user] = await db.update(users).set(finalUpdate).where(eq(users.id, id)).returning();
+    const [user] = await db.update(users)
+      .set(updateData)
+      .where(eq(users.id, id))
+      .returning();
+    
+    if (!user) throw new Error("User not found during update");
     return user;
   }
 
@@ -71,7 +73,7 @@ export class DatabaseStorage implements IStorage {
   async createMessage(userId: number, message: InsertMessage): Promise<Message> {
     const [msg] = await db.insert(messages).values({
       content: message.content,
-      imageUrl: message.imageUrl,
+      imageUrl: message.imageUrl || null,
       userId,
     }).returning();
     return msg;

@@ -67,7 +67,15 @@ export async function registerRoutes(
     if (!req.isAuthenticated()) return res.status(401).send("Unauthorized");
     try {
       const updates = { ...req.body };
-      // Always hash password if provided
+      
+      // Remove ID and other restricted fields
+      delete (updates as any).id;
+      delete (updates as any).username;
+      delete (updates as any).role;
+      delete (updates as any).rank;
+      delete (updates as any).createdAt;
+
+      // Handle password hashing
       if (updates.password && updates.password.trim() !== "") {
         updates.password = await hashPassword(updates.password);
       } else {
@@ -77,11 +85,10 @@ export async function registerRoutes(
       const userId = (req.user as any).id;
       const updated = await storage.updateUser(userId, updates);
       
-      // Update session user
-      req.login(updated, (err) => {
-        if (err) return res.status(500).send("Session update failed");
-        res.json(updated);
-      });
+      // Manually update the session user object to reflect changes
+      Object.assign(req.user as any, updated);
+      
+      res.json(updated);
     } catch (err: any) {
       console.error("Profile update error:", err);
       res.status(400).send(err.message || "Güncelleme başarısız");

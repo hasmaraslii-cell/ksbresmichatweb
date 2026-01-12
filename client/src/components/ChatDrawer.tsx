@@ -121,10 +121,15 @@ export function ChatDrawer() {
                 type="file"
                 id="chat-image-upload"
                 className="hidden"
-                accept="image/*"
+                accept="image/jpeg,image/png,image/gif,image/webp"
                 onChange={async (e) => {
                   const file = e.target.files?.[0];
                   if (file) {
+                    // 1MB limit check for base64
+                    if (file.size > 1024 * 1024) {
+                      alert("Dosya boyutu çok büyük (Maksimum 1MB)");
+                      return;
+                    }
                     const reader = new FileReader();
                     reader.onloadend = () => {
                       sendMessage.mutate({ content: input || "Fotoğraf paylaşıldı", imageUrl: reader.result as string });
