@@ -19,8 +19,8 @@ export function UserAvatar({ user, className }: UserAvatarProps) {
     .toUpperCase();
 
   return (
-    <Avatar className={cn("h-10 w-10 border border-white/10", className)}>
-      <AvatarImage src={user.avatarUrl || undefined} className="object-cover" />
+    <Avatar className={cn("h-10 w-10 border border-white/10 rounded-full overflow-hidden", className)}>
+      <AvatarImage src={user.avatarUrl || undefined} className="object-cover w-full h-full rounded-full" />
       <AvatarFallback className="bg-zinc-900 text-zinc-400 font-mono text-xs">
         {initials}
       </AvatarFallback>

@@ -55,7 +55,7 @@ export function ChatDrawer() {
               return (
                 <div key={msg.id} className={`group flex gap-3 ${msg.isDeleted ? 'opacity-50' : ''}`}>
                   <div className="flex-shrink-0 pt-1">
-                    <UserAvatar user={msg.user} className="h-8 w-8 rounded-none border-none ring-1 ring-white/10" />
+                    <UserAvatar user={msg.user} className="h-8 w-8 rounded-full border-none ring-1 ring-white/10" />
                   </div>
                   <div className="flex-1 min-w-0 flex flex-col">
                     <div className="flex items-baseline gap-2 mb-1">
@@ -69,15 +69,27 @@ export function ChatDrawer() {
                     </div>
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex flex-col gap-2 flex-1 min-w-0">
-                        <p className={`text-sm text-zinc-300 break-words whitespace-pre-wrap leading-relaxed ${msg.isDeleted ? 'line-through text-red-900' : ''}`}>
-                          {msg.content}
-                        </p>
+                        {msg.content && (
+                          <p className={`text-sm text-zinc-300 break-words whitespace-pre-wrap leading-relaxed ${msg.isDeleted ? 'line-through text-red-900' : ''}`}>
+                            {msg.content}
+                          </p>
+                        )}
                         {msg.imageUrl && (
-                          <img src={msg.imageUrl} alt="Chat" className="max-w-full rounded-sm border border-white/10 max-h-60 object-contain" />
+                          <div className="relative mt-1 group/img">
+                            <img 
+                              src={msg.imageUrl} 
+                              alt="Paylaşılan Görsel" 
+                              className="max-w-full rounded-sm border border-white/10 max-h-80 object-contain bg-zinc-900/50"
+                              onLoad={(e) => {
+                                // Scroll to bottom when image loads
+                                e.currentTarget.scrollIntoView({ behavior: 'smooth', block: 'end' });
+                              }}
+                            />
+                          </div>
                         )}
                       </div>
                       {(isAdmin || msg.userId === user?.id) && (
-                        <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 shrink-0">
+                        <div className="flex items-center gap-1 shrink-0 ml-2">
                           {msg.isDeleted ? (
                             isAdmin && (
                               <Button 
