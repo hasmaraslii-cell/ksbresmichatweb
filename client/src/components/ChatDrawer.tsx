@@ -57,31 +57,33 @@ export function ChatDrawer() {
                   <div className="flex-none w-8">
                     <UserAvatar user={msg.user} className="h-8 w-8 rounded-full ring-1 ring-white/10 overflow-hidden shrink-0" />
                   </div>
-                  <div className="flex-1 min-w-0 flex flex-col overflow-hidden">
-                    <div className="flex items-baseline justify-between gap-2 mb-1">
+                  <div className="flex-1 min-w-0 flex flex-col overflow-hidden max-w-full">
+                    <div className="flex items-baseline justify-between gap-2 mb-1 w-full">
                       <div className="flex items-baseline gap-2 min-w-0 flex-1">
-                        <span className="text-cyan-600 font-bold text-xs truncate">
+                        <span className="text-cyan-600 font-bold text-xs truncate max-w-[120px]">
                           {msg.user.displayName || msg.user.username}
                         </span>
-                        <RankBadge rank={msg.user.rank} />
+                        <div className="shrink-0 scale-75 origin-left">
+                          <RankBadge rank={msg.user.rank} />
+                        </div>
                       </div>
-                      <span className="text-[10px] text-zinc-600 flex-none">
+                      <span className="text-[10px] text-zinc-600 shrink-0">
                         {format(new Date(msg.createdAt!), "HH:mm:ss")}
                       </span>
                     </div>
-                    <div className="flex items-start gap-3 w-full">
-                      <div className="flex-1 min-w-0">
+                    <div className="flex items-start gap-2 w-full">
+                      <div className="flex-1 min-w-0 overflow-hidden">
                         {msg.content && (
-                          <p className={`text-sm text-zinc-300 break-words whitespace-pre-wrap leading-relaxed ${msg.isDeleted ? 'line-through text-red-900' : ''}`}>
+                          <div className={`text-sm text-zinc-300 break-words whitespace-pre-wrap leading-relaxed overflow-hidden ${msg.isDeleted ? 'line-through text-red-900' : ''}`}>
                             {msg.content}
-                          </p>
+                          </div>
                         )}
                         {msg.imageUrl && (
-                          <div className="relative mt-1 group/img w-full">
+                          <div className="relative mt-1 group/img w-full overflow-hidden">
                             <img 
                               src={msg.imageUrl} 
                               alt="Paylaşılan Görsel" 
-                              className="max-w-full rounded-sm border border-white/10 max-h-80 object-contain bg-zinc-900/50"
+                              className="max-w-full rounded-sm border border-white/10 max-h-80 object-contain bg-zinc-900/50 block"
                               onLoad={(e) => {
                                 e.currentTarget.scrollIntoView({ behavior: 'smooth', block: 'end' });
                               }}
@@ -90,7 +92,7 @@ export function ChatDrawer() {
                         )}
                       </div>
                       {(isAdmin || msg.userId === user?.id) && (
-                        <div className="flex-none shrink-0 self-start">
+                        <div className="shrink-0 self-start">
                           {!msg.isDeleted ? (
                             <Button 
                               variant="ghost" 
