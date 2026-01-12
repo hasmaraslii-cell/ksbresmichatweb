@@ -55,7 +55,7 @@ export function ChatDrawer() {
               return (
                 <div key={msg.id} className={`group flex gap-3 ${msg.isDeleted ? 'opacity-50' : ''}`}>
                   <div className="flex-shrink-0 pt-1">
-                    <UserAvatar user={msg.user} className="h-8 w-8 rounded-full border-none ring-1 ring-white/10" />
+                    <UserAvatar user={msg.user} className="h-8 w-8 rounded-full ring-1 ring-white/10" />
                   </div>
                   <div className="flex-1 min-w-0 flex flex-col">
                     <div className="flex items-baseline gap-2 mb-1">
@@ -96,7 +96,10 @@ export function ChatDrawer() {
                                 variant="ghost" 
                                 size="icon" 
                                 className="h-6 w-6 text-zinc-500 hover:text-cyan-400"
-                                onClick={() => restoreMessage.mutate(msg.id)}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  restoreMessage.mutate(msg.id);
+                                }}
                                 title="Mesajı Geri Getir"
                               >
                                 <Undo2 className="h-3 w-3" />
@@ -107,7 +110,10 @@ export function ChatDrawer() {
                               variant="ghost" 
                               size="icon" 
                               className="h-6 w-6 text-zinc-500 hover:text-red-400"
-                              onClick={() => deleteMessage.mutate(msg.id)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                deleteMessage.mutate(msg.id);
+                              }}
                               title="Mesajı Sil"
                             >
                               <Trash2 className="h-3 w-3" />
