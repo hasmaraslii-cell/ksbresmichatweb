@@ -131,11 +131,8 @@ export default function Dashboard() {
                  <span className="text-[10px] font-mono text-zinc-600">v1.0.4-LTS</span>
                </div>
                <div className="mt-auto relative z-10">
-                 <h4 className="text-zinc-400 font-mono text-[10px] tracking-widest uppercase">Hızlı İşlemler</h4>
-                 <div className="flex gap-2 mt-2">
-                    <Button variant="ghost" size="sm" className="h-7 text-[10px] font-mono border border-white/5 hover:border-cyan-500/30 px-2">LOGLAR</Button>
-                    <Button variant="ghost" size="sm" className="h-7 text-[10px] font-mono border border-white/5 hover:border-cyan-500/30 px-2">TARAMA</Button>
-                 </div>
+                 <h4 className="text-zinc-400 font-mono text-[10px] tracking-widest uppercase">Ak Sangur Portalı</h4>
+                 <div className="text-lg font-bold text-white mt-1">GÜVENLİ_ERİŞİM</div>
                </div>
             </BentoCard>
 

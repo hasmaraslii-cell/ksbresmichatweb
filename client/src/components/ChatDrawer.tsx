@@ -117,14 +117,25 @@ export function ChatDrawer() {
               className="bg-black border-zinc-800 text-green-500 font-mono placeholder:text-zinc-700 focus:border-green-900 focus:ring-1 focus:ring-green-900/20"
             />
             <div className="flex gap-2">
-              <Button type="button" variant="ghost" size="icon" className="text-zinc-500 hover:text-white" onClick={() => {
-                const url = prompt("Fotoğraf URL'sini girin:");
-                if (url) {
-                  sendMessage.mutate({ content: input || "Fotoğraf paylaşıldı", imageUrl: url });
-                  setInput("");
-                }
-              }}>
-                <MessageSquare className="h-4 w-4" />
+              <input
+                type="file"
+                id="chat-image-upload"
+                className="hidden"
+                accept="image/*"
+                onChange={async (e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    const reader = new FileReader();
+                    reader.onloadend = () => {
+                      sendMessage.mutate({ content: input || "Fotoğraf paylaşıldı", imageUrl: reader.result as string });
+                      setInput("");
+                    };
+                    reader.readAsDataURL(file);
+                  }
+                }}
+              />
+              <Button type="button" variant="ghost" size="icon" className="text-zinc-500 hover:text-white" onClick={() => document.getElementById('chat-image-upload')?.click()}>
+                <Send className="h-4 w-4 rotate-45" />
               </Button>
               <Button type="submit" disabled={sendMessage.isPending} className="bg-zinc-800 hover:bg-zinc-700 text-white">
                 <Send className="h-4 w-4" />
