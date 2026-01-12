@@ -54,13 +54,28 @@ export function ChatDrawer() {
 
   // Notification logic
   useEffect(() => {
+    if (Notification.permission === "default") {
+      Notification.requestPermission();
+    }
+  }, []);
+
+  useEffect(() => {
     if (messages && messages.length > 0) {
       const latestMsg = messages[messages.length - 1];
       if (lastMessageId.current !== null && latestMsg.id > lastMessageId.current && latestMsg.userId !== user?.id) {
+        // UI Notification (Toast)
         toast({
           title: latestMsg.user.displayName || latestMsg.user.username,
           description: latestMsg.content.substring(0, 50) + (latestMsg.content.length > 50 ? "..." : ""),
         });
+
+        // Browser Native Notification
+        if (Notification.permission === "granted" && document.hidden) {
+          new Notification(latestMsg.user.displayName || latestMsg.user.username, {
+            body: latestMsg.content,
+            icon: latestMsg.user.avatarUrl || "/favicon.png"
+          });
+        }
       }
       lastMessageId.current = latestMsg.id;
     }
@@ -153,7 +168,7 @@ export function ChatDrawer() {
                     <div className="flex items-start gap-2 w-full group/msg-content">
                       <div className="flex-1 min-w-0">
                         {msg.content && (
-                          <div className={`text-sm text-zinc-300 break-all whitespace-pre-wrap leading-relaxed ${msg.isDeleted ? 'line-through text-red-900' : ''}`}>
+                          <div className={`text-sm text-zinc-300 break-all overflow-wrap-anywhere whitespace-pre-wrap leading-relaxed ${msg.isDeleted ? 'line-through text-red-900' : ''}`} style={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }}>
                             {renderContent(msg.content)}
                           </div>
                         )}
