@@ -168,9 +168,9 @@ export function ChatDrawer() {
 
               return (
                 <div key={msg.id} className={`group flex gap-3 ${msg.isDeleted ? 'opacity-50' : ''} ${isConsecutive ? '-mt-2' : ''}`}>
-                  <div className="flex-none w-10 overflow-visible">
+                  <div className="flex-none w-10">
                     {!isConsecutive && (
-                      <div className="overflow-visible">
+                      <div className="relative">
                         <UserAvatar user={msg.user as any} className="h-8 w-8 rounded-full ring-1 ring-white/10 shrink-0" />
                       </div>
                     )}

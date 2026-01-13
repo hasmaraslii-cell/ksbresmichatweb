@@ -9,6 +9,7 @@ import Dashboard from "@/pages/Dashboard";
 import Admin from "@/pages/Admin";
 import CoreApplication from "@/pages/CoreApplication";
 import FanartGallery from "@/pages/FanartGallery";
+import DMPage from "@/pages/DMPage";
 
 function Router() {
   return (
@@ -18,6 +19,7 @@ function Router() {
       <Route path="/admin" component={Admin} />
       <Route path="/core" component={CoreApplication} />
       <Route path="/galeri" component={FanartGallery} />
+      <Route path="/dm" component={DMPage} />
       <Route component={NotFound} />
     </Switch>
   );

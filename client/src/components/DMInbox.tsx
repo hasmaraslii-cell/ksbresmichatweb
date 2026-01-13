@@ -14,14 +14,14 @@ interface DMInboxProps {
   onSelectChat: (user: User) => void;
 }
 
-export function DMInbox({ onClose, onSelectChat }: DMInboxProps) {
+export function DMInbox({ onSelectChat }: DMInboxProps) {
   const { user } = useAuth();
   const { users } = useUsers();
   const [search, setSearch] = useState("");
 
   const { data: allDms = [] } = useQuery<DirectMessage[]>({
     queryKey: ["/api/dms/all"],
-    refetchInterval: 5000,
+    refetchInterval: 1000,
   });
 
   // Group DMs by conversation
@@ -45,16 +45,12 @@ export function DMInbox({ onClose, onSelectChat }: DMInboxProps) {
   });
 
   return (
-    <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-      <div className="w-full max-w-md bg-zinc-950 border border-white/10 rounded-lg shadow-2xl flex flex-col h-[500px] font-mono">
+    <div className="w-full h-full bg-zinc-950 flex flex-col font-mono">
         <div className="p-4 border-b border-white/10 bg-zinc-900/50 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <MessageSquare className="h-5 w-5 text-cyan-500" />
             <span className="text-sm font-bold text-white tracking-widest uppercase">MESAJLAR</span>
           </div>
-          <Button variant="ghost" size="icon" className="h-8 w-8 text-zinc-500 hover:text-white" onClick={onClose}>
-            <X className="h-5 w-5" />
-          </Button>
         </div>
 
         <div className="p-4 border-b border-white/5">
@@ -97,6 +93,5 @@ export function DMInbox({ onClose, onSelectChat }: DMInboxProps) {
           </div>
         </ScrollArea>
       </div>
-    </div>
   );
 }
