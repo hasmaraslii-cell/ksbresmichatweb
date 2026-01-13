@@ -40,7 +40,8 @@ export async function registerRoutes(
   app: Express
 ): Promise<Server> {
   setupAuth(app);
-  seedDatabase().catch(console.error);
+  // seedDatabase() is removed from here for production safety or handled elsewhere
+  // seedDatabase().catch(console.error);
 
   const wss = new WebSocketServer({ server: httpServer, path: "/ws" });
   const clients = new Map<number, WebSocket>();
