@@ -178,9 +178,15 @@ export function ChatDrawer() {
                     {!isConsecutive && (
                       <div className="flex items-center justify-between gap-2 mb-1">
                         <div className="flex items-center gap-2 min-w-0">
-                          <span className={`font-bold text-xs truncate max-w-[100px] ${msg.user.role === 'admin' ? 'text-red-500' : 'text-cyan-600'}`}>
-                            {msg.user.displayName || msg.user.username}
-                          </span>
+                          <button 
+                            type="button"
+                            onClick={() => (window as any).openProfileDrawer?.(msg.user)}
+                            className="hover:underline text-left"
+                          >
+                            <span className={`font-bold text-xs truncate max-w-[100px] ${msg.user.role === 'admin' ? 'text-red-500' : 'text-cyan-600'}`}>
+                              {msg.user.displayName || msg.user.username}
+                            </span>
+                          </button>
                         </div>
                         <span className="text-[10px] text-zinc-600 shrink-0">
                           {format(new Date(msg.createdAt!), "HH:mm:ss")}
