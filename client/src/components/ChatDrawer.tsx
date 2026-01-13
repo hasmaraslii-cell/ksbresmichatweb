@@ -95,7 +95,7 @@ export function ChatDrawer() {
 
   const isAdmin = user?.role === "admin";
 
-  const renderContent = (content: string, isCore?: boolean) => {
+  const renderContent = (content: string, isCore?: boolean | null) => {
     if (!content) return null;
     const urlRegex = /(https?:\/\/[^\s]+)/g;
     const mentionRegex = /(@\w+)/g;
@@ -105,7 +105,7 @@ export function ChatDrawer() {
     return parts.map((part, i) => {
       if (!part) return null;
       if (part.match(urlRegex)) {
-        if (!isCore) return <span key={i}>{part}</span>;
+        if (isCore === false || isCore === null) return <span key={i}>{part}</span>;
         return (
           <a 
             key={i} 
@@ -166,7 +166,7 @@ export function ChatDrawer() {
               return (
                 <div key={msg.id} className={`group flex gap-3 ${msg.isDeleted ? 'opacity-50' : ''}`}>
               <div className="flex-none">
-                <UserAvatar user={msg.user} className="h-8 w-8 rounded-full ring-1 ring-white/10 shrink-0" />
+                <UserAvatar user={msg.user as any} className="h-8 w-8 rounded-full ring-1 ring-white/10 shrink-0" />
               </div>
               <div className="flex-1 min-w-0 flex flex-col overflow-hidden">
                 <div className="flex items-center justify-between gap-2 mb-1">
@@ -187,7 +187,7 @@ export function ChatDrawer() {
                   <div className="flex-1 min-w-0">
                     {msg.content && (
                       <div className={`text-sm text-zinc-300 break-all overflow-wrap-anywhere whitespace-pre-wrap leading-relaxed ${msg.isDeleted ? 'line-through text-red-900' : ''}`} style={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }}>
-                        {renderContent(msg.content, msg.user.isCore)}
+                        {renderContent(msg.content, msg.user.isCore as boolean | null)}
                       </div>
                     )}
                         {msg.imageUrl && (
@@ -275,7 +275,7 @@ export function ChatDrawer() {
                   className="w-full px-4 py-2 text-left text-sm hover:bg-white/5 flex items-center gap-2 border-b border-white/5 last:border-0"
                   onClick={() => insertMention(u.username)}
                 >
-                  <UserAvatar user={u} className="h-5 w-5" />
+                  <UserAvatar user={u as any} className="h-5 w-5 rounded-full ring-1 ring-white/10 shrink-0" />
                   <span className="text-zinc-300 font-mono">{u.displayName || u.username}</span>
                   <span className="text-[10px] text-zinc-600 ml-auto">@{u.username}</span>
                 </button>

@@ -21,7 +21,7 @@ interface UserAvatarProps {
     displayName?: string | null;
     username: string;
     avatarUrl?: string | null;
-    isCore?: boolean;
+    isCore?: boolean | null;
     profileAnimation?: string | null;
   };
   className?: string;

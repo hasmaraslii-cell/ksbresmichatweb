@@ -66,12 +66,11 @@ export async function registerRoutes(
     });
 
     ws.on("close", () => {
-      for (const [userId, client] of clients.entries()) {
+      Array.from(clients.entries()).forEach(([userId, client]) => {
         if (client === ws) {
           clients.delete(userId);
-          break;
         }
-      }
+      });
     });
   });
 

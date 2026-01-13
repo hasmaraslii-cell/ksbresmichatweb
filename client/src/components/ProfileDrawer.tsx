@@ -80,7 +80,7 @@ export function ProfileDrawer() {
 
         <div className="flex flex-col gap-8">
           <div className="flex items-center gap-4 p-4 bg-white/5 rounded-sm border border-white/5">
-            <UserAvatar user={user} className="h-20 w-20" />
+            <UserAvatar user={user as any} className="h-20 w-20" />
             <div className="space-y-1">
               <h2 className="text-xl font-bold font-mono tracking-wide text-white">{user.displayName || user.username}</h2>
               <p className="text-xs text-zinc-500 font-mono uppercase tracking-widest">{user.rank || "Bilinmiyor"}</p>

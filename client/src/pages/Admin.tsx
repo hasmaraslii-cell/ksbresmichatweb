@@ -115,7 +115,7 @@ export default function Admin() {
                       <TableRow key={u.id} className="border-white/5 hover:bg-white/[0.02]">
                         <TableCell className="font-medium">
                           <div className="flex items-center gap-3">
-                            <UserAvatar user={u} className="h-8 w-8" />
+                            <UserAvatar user={u as any} className="h-8 w-8" />
                             <div>
                               <div className="text-zinc-300 text-xs">{u.username}</div>
                               <div className="text-zinc-600 text-[10px]">{u.displayName}</div>
@@ -241,7 +241,7 @@ export default function Admin() {
                   <img src={f.imageUrl} alt="Fanart" className="w-full h-48 object-cover border-b border-white/10" />
                   <div className="p-4 space-y-3">
                     <div className="flex items-center gap-2">
-                      <UserAvatar user={f.user} className="h-6 w-6" />
+                      <UserAvatar user={f.user as any} className="h-6 w-6" />
                       <span className="text-sm font-bold">{f.user.username}</span>
                     </div>
                     <div className="flex gap-2">
