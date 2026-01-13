@@ -18,7 +18,7 @@ export function DMChat({ otherUser, onClose }: { otherUser: User; onClose: () =>
 
   const { data: messages = [] } = useQuery<DirectMessage[]>({
     queryKey: ["/api/dms", otherUser.id],
-    refetchInterval: 1000, // FASTER REFRESH
+    refetchInterval: 500, // ULTRA FAST REFRESH (0.5s)
   });
 
   const renderContent = (text: string) => {

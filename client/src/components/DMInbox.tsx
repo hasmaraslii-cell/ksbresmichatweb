@@ -21,7 +21,7 @@ export function DMInbox({ onSelectChat }: DMInboxProps) {
 
   const { data: allDms = [] } = useQuery<DirectMessage[]>({
     queryKey: ["/api/dms/all"],
-    refetchInterval: 1000,
+    refetchInterval: 500, // ULTRA FAST REFRESH
   });
 
   // Group DMs by conversation
