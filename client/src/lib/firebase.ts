@@ -10,10 +10,20 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID
 };
 
+console.log("Firebase config check:", {
+  hasApiKey: !!firebaseConfig.apiKey,
+  projectId: firebaseConfig.projectId
+});
+
 // Initialize Firebase if not already initialized
-if (!firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig);
+try {
+  if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+    console.log("Firebase initialized successfully");
+  }
+} catch (error) {
+  console.error("Firebase initialization error:", error);
 }
 
-export const db = firebase.firestore();
+export const db = firebase.apps.length ? firebase.firestore() : null;
 export default firebase;
