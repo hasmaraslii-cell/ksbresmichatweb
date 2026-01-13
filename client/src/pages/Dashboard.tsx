@@ -137,17 +137,7 @@ export default function Dashboard() {
         <DMChat otherUser={selectedUserForDM} onClose={() => setSelectedUserForDM(null)} />
       )}
 
-      {/* Footer Navigation Button - instead of hamburger */}
-      {user?.role !== 'admin' && (
-        <div className="fixed bottom-8 left-0 right-0 flex justify-center z-40 pointer-events-none">
-          <Button 
-            className="pointer-events-auto bg-black/80 backdrop-blur-md border border-white/10 text-zinc-400 hover:text-white hover:border-cyan-500/50 hover:bg-black px-8 py-6 font-mono tracking-[0.2em] text-xs transition-all duration-300 shadow-2xl"
-            onClick={() => window.location.reload()}
-          >
-            KONTROL PANELİ
-          </Button>
-        </div>
-      )}
+      {/* Footer Navigation Button - Removed as requested */}
     </div>
   );
 }

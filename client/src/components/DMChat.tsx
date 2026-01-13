@@ -5,10 +5,10 @@ import { queryClient, apiRequest } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Card, CardContent } from "@/components/ui/card";
 import { Send, X } from "lucide-react";
 import type { DirectMessage, User } from "@shared/schema";
+import { UserAvatar } from "./UserAvatar";
+import { format } from "date-fns";
 
 export function DMChat({ otherUser, onClose }: { otherUser: User; onClose: () => void }) {
   const { user } = useAuth();
@@ -18,6 +18,21 @@ export function DMChat({ otherUser, onClose }: { otherUser: User; onClose: () =>
 
   const { data: messages = [] } = useQuery<DirectMessage[]>({
     queryKey: ["/api/dms", otherUser.id],
+    refetchInterval: 3000,
+  });
+
+  const sendMutation = useMutation({
+    mutationFn: async (msgContent: string) => {
+      const res = await apiRequest("POST", "/api/dms", { 
+        receiverId: otherUser.id, 
+        content: msgContent 
+      });
+      return res.json();
+    },
+    onSuccess: () => {
+      setContent("");
+      queryClient.invalidateQueries({ queryKey: ["/api/dms", otherUser.id] });
+    }
   });
 
   useEffect(() => {
@@ -45,51 +60,67 @@ export function DMChat({ otherUser, onClose }: { otherUser: User; onClose: () =>
     }
   }, [messages]);
 
-  const sendMessage = () => {
-    if (!content.trim() || !ws) return;
-    ws.send(JSON.stringify({
-      type: "dm",
-      senderId: user?.id,
-      receiverId: otherUser.id,
-      content
-    }));
-    setContent("");
+  const handleSendMessage = () => {
+    if (!content.trim()) return;
+    
+    if (ws && ws.readyState === WebSocket.OPEN) {
+      ws.send(JSON.stringify({
+        type: "dm",
+        senderId: user?.id,
+        receiverId: otherUser.id,
+        content: content.trim()
+      }));
+      setContent("");
+    } else {
+      sendMutation.mutate(content.trim());
+    }
   };
 
   return (
-    <Card className="fixed bottom-4 right-4 w-80 h-96 flex flex-col shadow-xl border-primary/20 z-50">
-      <div className="p-3 border-b bg-primary text-primary-foreground flex justify-between items-center rounded-t-lg">
+    <div className="fixed bottom-4 right-4 w-80 h-96 bg-zinc-950 border border-white/10 shadow-2xl flex flex-col z-50 rounded-lg overflow-hidden font-mono">
+      <div className="p-3 border-b border-white/10 bg-zinc-900 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Avatar className="h-6 w-6 border">
-            <AvatarImage src={otherUser.avatarUrl || ""} />
-            <AvatarFallback>{otherUser.displayName?.[0]}</AvatarFallback>
-          </Avatar>
-          <span className="font-medium text-sm">{otherUser.displayName}</span>
+          <UserAvatar user={otherUser} className="h-6 w-6" />
+          <span className="text-xs font-bold text-white uppercase tracking-wider">{otherUser.displayName || otherUser.username}</span>
         </div>
-        <Button variant="ghost" size="icon" className="h-6 w-6 text-primary-foreground hover:bg-primary-foreground/20" onClick={onClose}>
+        <Button variant="ghost" size="icon" className="h-6 w-6 text-zinc-500 hover:text-white" onClick={onClose}>
           <X className="h-4 w-4" />
         </Button>
       </div>
-      <ScrollArea className="flex-1 p-3" ref={scrollRef}>
-        <div className="space-y-2">
+
+      <ScrollArea className="flex-1 p-3 bg-black/40">
+        <div className="flex flex-col gap-2">
           {messages.map((msg) => (
-            <div key={msg.id} className={`flex ${msg.senderId === user?.id ? "justify-end" : "justify-start"}`}>
-              <div className={`max-w-[80%] p-2 rounded-lg text-sm ${msg.senderId === user?.id ? "bg-primary text-primary-foreground" : "bg-muted"}`}>
-                {msg.content}
+            <div 
+              key={msg.id} 
+              className={`max-w-[80%] rounded-md p-2 text-xs ${
+                msg.senderId === user?.id 
+                  ? "bg-cyan-950/30 text-cyan-100 self-end border border-cyan-900/30" 
+                  : "bg-zinc-900 text-zinc-300 self-start border border-white/5"
+              }`}
+            >
+              <div>{msg.content}</div>
+              <div className="text-[8px] opacity-40 mt-1 text-right">
+                {format(new Date(msg.createdAt!), "HH:mm")}
               </div>
             </div>
           ))}
+          <div ref={scrollRef} />
         </div>
       </ScrollArea>
-      <div className="p-3 border-t flex gap-2">
+
+      <div className="p-3 border-t border-white/10 bg-zinc-900/50 flex gap-2">
         <Input 
           value={content} 
           onChange={(e) => setContent(e.target.value)} 
           placeholder="Mesaj yaz..." 
-          onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+          className="h-8 bg-black border-zinc-800 text-[10px] text-cyan-500 placeholder:text-zinc-700 focus:border-cyan-900"
+          onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
         />
-        <Button size="icon" onClick={sendMessage}><Send className="h-4 w-4" /></Button>
+        <Button size="icon" className="h-8 w-8 bg-cyan-950/50 text-cyan-400 border border-cyan-900/50 hover:bg-cyan-900/50" onClick={handleSendMessage}>
+          <Send className="h-3 w-3" />
+        </Button>
       </div>
-    </Card>
+    </div>
   );
 }

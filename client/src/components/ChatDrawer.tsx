@@ -166,10 +166,12 @@ export function ChatDrawer() {
               const isConsecutive = index > 0 && messages[index - 1].userId === msg.userId && !messages[index - 1].isDeleted;
 
               return (
-                <div key={msg.id} className={`group flex gap-3 ${msg.isDeleted ? 'opacity-50' : ''} ${isConsecutive ? '-mt-3' : ''}`}>
+                <div key={msg.id} className={`group flex gap-3 ${msg.isDeleted ? 'opacity-50' : ''} ${isConsecutive ? '-mt-2' : ''}`}>
                   <div className="flex-none w-8">
                     {!isConsecutive && (
-                      <UserAvatar user={msg.user as any} className="h-8 w-8 rounded-full ring-1 ring-white/10 shrink-0" />
+                      <div className="overflow-visible">
+                        <UserAvatar user={msg.user as any} className="h-8 w-8 rounded-full ring-1 ring-white/10 shrink-0" />
+                      </div>
                     )}
                   </div>
                   <div className="flex-1 min-w-0 flex flex-col overflow-hidden">

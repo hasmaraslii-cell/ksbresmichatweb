@@ -66,8 +66,8 @@ export function UserAvatar({ user, className, showBadge = true }: UserAvatarProp
   return (
     <div className="relative inline-block shrink-0">
       {animationSrc && (
-        <div className="absolute inset-[-5%] pointer-events-none z-10 overflow-visible">
-          <img src={animationSrc} alt="" className="w-full h-full object-contain scale-100" />
+        <div className="absolute inset-[-2%] pointer-events-none z-10 overflow-visible">
+          <img src={animationSrc} alt="" className="w-full h-full object-contain scale-95" />
         </div>
       )}
       <div className="relative">
