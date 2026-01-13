@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Upload, Star } from "lucide-react";
+import { Upload, Star, ArrowLeft } from "lucide-react";
+import { Link } from "wouter";
 
 export default function CoreApplication() {
   const { user } = useAuth();
@@ -47,6 +48,13 @@ export default function CoreApplication() {
     <div className="p-6 max-w-2xl mx-auto space-y-6 text-zinc-300 font-mono">
       <Card className="border-white/10 bg-black/50">
         <CardHeader>
+          <div className="flex items-center justify-between mb-2">
+            <Link href="/">
+              <Button variant="ghost" size="sm" className="text-zinc-500 hover:text-white gap-2 uppercase tracking-widest text-[10px]">
+                <ArrowLeft className="h-3 w-3" /> GERİ DÖN
+              </Button>
+            </Link>
+          </div>
           <CardTitle className="flex items-center gap-2 text-2xl text-white uppercase tracking-widest">
             <Star className="h-6 w-6 text-yellow-500 fill-yellow-500" />
             Core Başvurusu

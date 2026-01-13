@@ -160,29 +160,31 @@ export function ChatDrawer() {
 
         <ScrollArea className="flex-1 p-4 bg-black/80 font-mono">
           <div className="flex flex-col gap-4">
-            {messages?.map((msg) => {
+            {messages?.map((msg, index) => {
               if (msg.isDeleted && !isAdmin) return null;
 
+              const isConsecutive = index > 0 && messages[index - 1].userId === msg.userId && !messages[index - 1].isDeleted;
+
               return (
-                <div key={msg.id} className={`group flex gap-3 ${msg.isDeleted ? 'opacity-50' : ''}`}>
-              <div className="flex-none">
-                <UserAvatar user={msg.user as any} className="h-8 w-8 rounded-full ring-1 ring-white/10 shrink-0" />
-              </div>
-              <div className="flex-1 min-w-0 flex flex-col overflow-hidden">
-                <div className="flex items-center justify-between gap-2 mb-1">
-                  <div className="flex items-center gap-2 min-w-0">
-                    <span className={`font-bold text-xs truncate max-w-[100px] ${msg.user.role === 'admin' ? 'text-red-500' : 'text-cyan-600'}`}>
-                      {msg.user.displayName || msg.user.username}
-                    </span>
-                    {msg.user.isCore && (
-                      <Badge variant="outline" className="h-4 text-[8px] border-yellow-500/50 text-yellow-500 px-1 font-bold">CORE</Badge>
+                <div key={msg.id} className={`group flex gap-3 ${msg.isDeleted ? 'opacity-50' : ''} ${isConsecutive ? '-mt-3' : ''}`}>
+                  <div className="flex-none w-8">
+                    {!isConsecutive && (
+                      <UserAvatar user={msg.user as any} className="h-8 w-8 rounded-full ring-1 ring-white/10 shrink-0" />
                     )}
-                    <RankBadge rank={msg.user.rank} />
                   </div>
-                  <span className="text-[10px] text-zinc-600 shrink-0">
-                    {format(new Date(msg.createdAt!), "HH:mm:ss")}
-                  </span>
-                </div>
+                  <div className="flex-1 min-w-0 flex flex-col overflow-hidden">
+                    {!isConsecutive && (
+                      <div className="flex items-center justify-between gap-2 mb-1">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <span className={`font-bold text-xs truncate max-w-[100px] ${msg.user.role === 'admin' ? 'text-red-500' : 'text-cyan-600'}`}>
+                            {msg.user.displayName || msg.user.username}
+                          </span>
+                        </div>
+                        <span className="text-[10px] text-zinc-600 shrink-0">
+                          {format(new Date(msg.createdAt!), "HH:mm:ss")}
+                        </span>
+                      </div>
+                    )}
                 <div className="flex items-start gap-2 w-full group/msg-content">
                   <div className="flex-1 min-w-0">
                     {msg.content && (

@@ -138,10 +138,26 @@ export default function Admin() {
                           >
                             <option value="Kurucu">Kurucu</option>
                             <option value="Başlider">Başlider</option>
-                            <option value="Lider">Lider</option>
+                            <option value="Konsey Üyesi">Konsey Üyesi</option>
+                            <option value="General">General</option>
+                            <option value="Kurmay">Kurmay</option>
+                            <option value="Yönetici">Yönetici</option>
+                            <option value="Kaptan">Kaptan</option>
+                            <option value="Efsane">Efsane</option>
+                            <option value="Üstad">Üstad</option>
+                            <option value="Gözcü">Gözcü</option>
+                            <option value="Şövalye">Şövalye</option>
+                            <option value="Muhafız">Muhafız</option>
                             <option value="Kıdemli">Kıdemli</option>
-                            <option value="Üye">Üye</option>
+                            <option value="Savaşçı">Savaşçı</option>
+                            <option value="Yaver">Yaver</option>
+                            <option value="Temsilci">Temsilci</option>
+                            <option value="Kaşif">Kaşif</option>
+                            <option value="Nefer">Nefer</option>
+                            <option value="Gönüllü">Gönüllü</option>
+                            <option value="Çırak">Çırak</option>
                             <option value="Aday">Aday</option>
+                            <option value="Yolcu">Yolcu</option>
                           </select>
                         </TableCell>
                         <TableCell>
