@@ -2,6 +2,9 @@ import { useAuth } from "@/hooks/use-auth";
 import { useUsers } from "@/hooks/use-users";
 import { useChat } from "@/hooks/use-chat";
 import { useLocation, Link } from "wouter";
+import { useToast } from "@/hooks/use-toast";
+import { queryClient, apiRequest } from "@/lib/queryClient";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { BentoCard } from "@/components/BentoCard";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -17,6 +20,34 @@ export default function Admin() {
   const { users, toggleUserDelete } = useUsers();
   const { messages, restoreMessage } = useChat();
   const [, setLocation] = useLocation();
+  const { toast } = useToast();
+
+  const { data: pendingFanarts = [] } = useQuery<any[]>({
+    queryKey: ["/api/admin/fanarts"],
+  });
+
+  const giftCoreMutation = useMutation({
+    mutationFn: async (userId: number) => {
+      const res = await apiRequest("PATCH", `/api/admin/gift-core/${userId}`, {});
+      return res.json();
+    },
+    onSuccess: () => {
+      toast({ title: "Core Hediye Edildi", description: "Kullanıcı 30 günlük Core yetkisi kazandı." });
+      queryClient.invalidateQueries({ queryKey: ["/api/users"] });
+    }
+  });
+
+  const manageFanartMutation = useMutation({
+    mutationFn: async ({ id, status }: { id: number; status: string }) => {
+      const res = await apiRequest("PATCH", `/api/admin/fanarts/${id}`, { status });
+      return res.json();
+    },
+    onSuccess: () => {
+      toast({ title: "Başvuru Güncellendi" });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/fanarts"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/users"] });
+    }
+  });
 
   if (isLoading) return null;
 
@@ -57,6 +88,12 @@ export default function Admin() {
             >
               Kurtarılan Veriler ({deletedMessages.length})
             </TabsTrigger>
+            <TabsTrigger 
+              value="fanarts"
+              className="data-[state=active]:bg-white/10 data-[state=active]:text-white text-zinc-500 rounded-none px-4 md:px-6 py-2 md:py-3 text-[10px] md:text-xs tracking-widest uppercase flex-1 md:flex-none"
+            >
+              Fanart Başvuruları ({pendingFanarts.length})
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="personnel">
@@ -68,6 +105,7 @@ export default function Admin() {
                       <TableHead className="text-zinc-500 font-mono uppercase text-[10px] tracking-widest">Agent</TableHead>
                       <TableHead className="text-zinc-500 font-mono uppercase text-[10px] tracking-widest">Rank</TableHead>
                       <TableHead className="text-zinc-500 font-mono uppercase text-[10px] tracking-widest">Role</TableHead>
+                      <TableHead className="text-zinc-500 font-mono uppercase text-[10px] tracking-widest">Core</TableHead>
                       <TableHead className="text-zinc-500 font-mono uppercase text-[10px] tracking-widest">Status</TableHead>
                       <TableHead className="text-zinc-500 font-mono uppercase text-[10px] tracking-widest text-right">Actions</TableHead>
                     </TableRow>
@@ -91,6 +129,27 @@ export default function Admin() {
                           <span className={`text-xs uppercase ${u.role === 'admin' ? 'text-red-400 font-bold' : 'text-zinc-500'}`}>
                             {u.role}
                           </span>
+                        </TableCell>
+                        <TableCell>
+                          {u.isCore ? (
+                            <div className="flex flex-col">
+                              <span className="text-yellow-500 text-[10px] font-bold">CORE</span>
+                              {u.coreExpiry && (
+                                <span className="text-[8px] text-zinc-500">
+                                  Sona erme: {format(new Date(u.coreExpiry), "dd.MM.yyyy")}
+                                </span>
+                              )}
+                            </div>
+                          ) : (
+                            <Button 
+                              size="sm" 
+                              variant="ghost" 
+                              className="text-[10px] h-6 border border-yellow-900/30 text-yellow-600 hover:bg-yellow-950/20"
+                              onClick={() => giftCoreMutation.mutate(u.id)}
+                            >
+                              CORE YAP
+                            </Button>
+                          )}
                         </TableCell>
                         <TableCell>
                           {u.isDeleted ? (
@@ -174,6 +233,56 @@ export default function Admin() {
                 </Table>
               </BentoCard>
             </motion.div>
+          </TabsContent>
+          <TabsContent value="fanarts">
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {pendingFanarts.map((f) => (
+                <BentoCard key={f.id} className="overflow-hidden flex flex-col border-white/10">
+                  <img src={f.imageUrl} alt="Fanart" className="w-full h-48 object-cover border-b border-white/10" />
+                  <div className="p-4 space-y-3">
+                    <div className="flex items-center gap-2">
+                      <UserAvatar user={f.user} className="h-6 w-6" />
+                      <span className="text-sm font-bold">{f.user.username}</span>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button 
+                        className="flex-1 bg-green-950/30 text-green-500 border-green-900/30 hover:bg-green-900/40"
+                        onClick={() => manageFanartMutation.mutate({ id: f.id, status: "approved" })}
+                      >
+                        KABUL ET
+                      </Button>
+                      <Button 
+                        variant="destructive"
+                        className="flex-1 bg-red-950/30 text-red-500 border-red-900/30 hover:bg-red-900/40"
+                        onClick={() => manageFanartMutation.mutate({ id: f.id, status: "rejected" })}
+                      >
+                        REDDET
+                      </Button>
+                    </div>
+                  </div>
+                </BentoCard>
+              ))}
+              {pendingFanarts.length === 0 && (
+                <div className="col-span-full h-40 flex items-center justify-center border border-dashed border-white/10 rounded-lg text-zinc-600 uppercase tracking-widest text-xs">
+                  BEKLEYEN BAŞVURU YOK
+                </div>
+              )}
+            </motion.div>
+            
+            {/* Profil Animasyon Seçici */}
+            <div className="mt-12 space-y-6">
+              <h2 className="text-lg font-bold tracking-widest text-white uppercase border-b border-white/10 pb-2">PROFİL ANİMASYON_YÖNETİMİ</h2>
+              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                {[
+                  "sakura", "mokoko", "boba", "bunny", "clown", "los_santos"
+                ].map((anim) => (
+                  <BentoCard key={anim} className="p-2 border-white/5 hover:border-cyan-500/30 transition-colors flex flex-col items-center gap-2">
+                    <div className="text-[10px] uppercase font-mono text-zinc-500">{anim}</div>
+                    <Button size="sm" variant="ghost" className="w-full text-[9px] h-7 border border-white/5">YÜKLE</Button>
+                  </BentoCard>
+                ))}
+              </div>
+            </div>
           </TabsContent>
         </Tabs>
       </div>

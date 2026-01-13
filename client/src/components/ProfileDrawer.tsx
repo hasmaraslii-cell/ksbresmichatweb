@@ -14,6 +14,8 @@ const profileSchema = z.object({
   displayName: z.string().min(2, "İsim çok kısa").optional().or(z.literal("")),
   avatarUrl: z.string().optional().or(z.literal("")),
   password: z.string().min(6, "Parola çok kısa").optional().or(z.literal("")),
+  biography: z.string().max(200, "Biyografi çok uzun").optional().or(z.literal("")),
+  profileAnimation: z.string().optional().or(z.literal("")),
 });
 
 export function ProfileDrawer() {
@@ -25,6 +27,8 @@ export function ProfileDrawer() {
       displayName: user?.displayName || "",
       avatarUrl: user?.avatarUrl || "",
       password: "",
+      biography: user?.biography || "",
+      profileAnimation: user?.profileAnimation || "",
     },
   });
 
@@ -48,6 +52,8 @@ export function ProfileDrawer() {
     if (data.displayName && data.displayName.trim() !== "") updates.displayName = data.displayName;
     if (data.avatarUrl && data.avatarUrl.trim() !== "") updates.avatarUrl = data.avatarUrl;
     if (data.password && data.password.trim() !== "") updates.password = data.password;
+    if (data.biography !== undefined) updates.biography = data.biography;
+    if (data.profileAnimation !== undefined) updates.profileAnimation = data.profileAnimation;
     
     if (Object.keys(updates).length === 0) return;
     
@@ -120,6 +126,47 @@ export function ProfileDrawer() {
                   </FormItem>
                 )}
               />
+
+              <FormField
+                control={form.control}
+                name="biography"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-zinc-400 font-mono text-xs uppercase">Biyografi</FormLabel>
+                    <FormControl>
+                      <Input {...field} className="bg-zinc-900/50 border-zinc-800 text-white font-mono focus:border-cyan-900" placeholder="Kendinden bahset..." />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {user.isCore && (
+                <FormField
+                  control={form.control}
+                  name="profileAnimation"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-yellow-500 font-mono text-xs uppercase">Core Animasyon Çerçevesi</FormLabel>
+                      <FormControl>
+                        <select 
+                          {...field} 
+                          className="w-full h-10 bg-zinc-900/50 border-zinc-800 text-white font-mono rounded-md px-3 focus:border-yellow-500 outline-none"
+                        >
+                          <option value="">Yok</option>
+                          <option value="sakura">Sakura Gyoiko</option>
+                          <option value="mokoko">Mokoko Love</option>
+                          <option value="boba">Wingman Boba</option>
+                          <option value="bunny">Freezer Bunny</option>
+                          <option value="clown">Clown Fun</option>
+                          <option value="los_santos">City of Los Santos</option>
+                        </select>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
 
               <Button type="submit" className="w-full bg-cyan-950/50 text-cyan-400 hover:bg-cyan-900/50 border border-cyan-900/50 font-mono uppercase tracking-widest">
                 <Save className="mr-2 h-4 w-4" />

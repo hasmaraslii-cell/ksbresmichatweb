@@ -2,17 +2,25 @@ import { useAuth } from "@/hooks/use-auth";
 import { Link, useLocation } from "wouter";
 import { ProfileDrawer } from "@/components/ProfileDrawer";
 import { ChatDrawer } from "@/components/ChatDrawer";
+import { DMChat } from "@/components/DMChat";
 import { motion } from "framer-motion";
 import { BentoCard } from "@/components/BentoCard";
 import { Button } from "@/components/ui/button";
-import { Terminal, ShieldAlert, Activity, Users } from "lucide-react";
+import { Terminal, ShieldAlert, Activity, Users, Star } from "lucide-react";
 import logoImg from "/images/logo.png";
 import { RankBadge } from "@/components/RankBadge";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import type { User } from "@shared/schema";
 
 export default function Dashboard() {
   const { user, isLoading } = useAuth();
   const [, setLocation] = useLocation();
+  const [selectedUserForDM, setSelectedUserForDM] = useState<User | null>(null);
+
+  useEffect(() => {
+    (window as any).setSelectedUserForDM = setSelectedUserForDM;
+    return () => { delete (window as any).setSelectedUserForDM; };
+  }, []);
 
   useEffect(() => {
     if (!isLoading && !user) {
@@ -27,7 +35,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0b] text-white relative overflow-hidden font-sans selection:bg-cyan-900 selection:text-white">
+    <div className="min-h-screen bg-[#0a0a0b] text-white relative overflow-hidden font-sans selection:bg-cyan-900 selection:text-white" data-dashboard>
       {/* Subtle Grid Background */}
       <div className="fixed inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:100px_100px] pointer-events-none" />
       
@@ -82,6 +90,19 @@ export default function Dashboard() {
 
           {/* Action Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto w-full">
+            <BentoCard className="col-span-1 flex items-center justify-between p-6 hover:bg-white/5 cursor-pointer border border-white/5 bg-black/40 backdrop-blur-sm group relative overflow-hidden transition-all duration-500">
+              <Link href="/core" className="absolute inset-0 z-10" />
+              <div className="flex items-center gap-5">
+                <div className="p-3 bg-yellow-950/20 rounded-md border border-yellow-900/30 group-hover:border-yellow-500/50 transition-colors">
+                  <Star className="h-6 w-6 text-yellow-500" />
+                </div>
+                <div className="text-left">
+                  <h3 className="text-lg font-mono text-white tracking-wider group-hover:text-yellow-100 transition-colors">CORE ÜYELİK</h3>
+                  <p className="text-[10px] text-yellow-500/70 font-mono mt-1 uppercase tracking-[0.2em]">Ayrıcalıklar Dünyası</p>
+                </div>
+              </div>
+            </BentoCard>
+
             {user.role === 'admin' && (
               <BentoCard className="col-span-1 md:col-span-2 flex items-center justify-between p-6 hover:bg-white/5 cursor-pointer border border-white/5 bg-black/40 backdrop-blur-sm group relative overflow-hidden transition-all duration-500">
                  <Link href="/admin" className="absolute inset-0 z-10" />
@@ -111,6 +132,10 @@ export default function Dashboard() {
 
         </motion.div>
       </main>
+
+      {selectedUserForDM && (
+        <DMChat otherUser={selectedUserForDM} onClose={() => setSelectedUserForDM(null)} />
+      )}
 
       {/* Footer Navigation Button - instead of hamburger */}
       {user?.role !== 'admin' && (

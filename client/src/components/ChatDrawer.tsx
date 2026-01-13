@@ -2,7 +2,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { MessageSquare, Send, Trash2, Undo2, Image as ImageIcon, Bell } from "lucide-react";
+import { MessageSquare, Send, Trash2, Undo2, Image as ImageIcon, Bell, Star } from "lucide-react";
 import { useChat } from "@/hooks/use-chat";
 import { useAuth } from "@/hooks/use-auth";
 import { useUsers } from "@/hooks/use-users";
@@ -10,6 +10,7 @@ import { useState, useRef, useEffect, useMemo } from "react";
 import { format } from "date-fns";
 import { UserAvatar } from "./UserAvatar";
 import { RankBadge } from "./RankBadge";
+import { Badge } from "./ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
@@ -94,14 +95,17 @@ export function ChatDrawer() {
 
   const isAdmin = user?.role === "admin";
 
-  const renderContent = (content: string) => {
+  const renderContent = (content: string, isCore?: boolean) => {
+    if (!content) return null;
     const urlRegex = /(https?:\/\/[^\s]+)/g;
     const mentionRegex = /(@\w+)/g;
 
     const parts = content.split(/((?:https?:\/\/[^\s]+)|(?:@\w+))/g);
     
     return parts.map((part, i) => {
+      if (!part) return null;
       if (part.match(urlRegex)) {
+        if (!isCore) return <span key={i}>{part}</span>;
         return (
           <a 
             key={i} 
@@ -121,7 +125,7 @@ export function ChatDrawer() {
           </span>
         );
       }
-      return part;
+      return <span key={i}>{part}</span>;
     });
   };
 
@@ -161,28 +165,31 @@ export function ChatDrawer() {
 
               return (
                 <div key={msg.id} className={`group flex gap-3 ${msg.isDeleted ? 'opacity-50' : ''}`}>
-                  <div className="flex-none">
-                    <UserAvatar user={msg.user} className="h-8 w-8 rounded-full ring-1 ring-white/10 shrink-0" />
+              <div className="flex-none">
+                <UserAvatar user={msg.user} className="h-8 w-8 rounded-full ring-1 ring-white/10 shrink-0" />
+              </div>
+              <div className="flex-1 min-w-0 flex flex-col overflow-hidden">
+                <div className="flex items-center justify-between gap-2 mb-1">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className={`font-bold text-xs truncate max-w-[100px] ${msg.user.role === 'admin' ? 'text-red-500' : 'text-cyan-600'}`}>
+                      {msg.user.displayName || msg.user.username}
+                    </span>
+                    {msg.user.isCore && (
+                      <Badge variant="outline" className="h-4 text-[8px] border-yellow-500/50 text-yellow-500 px-1 font-bold">CORE</Badge>
+                    )}
+                    <RankBadge rank={msg.user.rank} />
                   </div>
-                  <div className="flex-1 min-w-0 flex flex-col overflow-hidden">
-                    <div className="flex items-center justify-between gap-2 mb-1">
-                      <div className="flex items-center gap-2 min-w-0">
-                        <span className="text-cyan-600 font-bold text-xs truncate max-w-[100px]">
-                          {msg.user.displayName || msg.user.username}
-                        </span>
-                        <RankBadge rank={msg.user.rank} />
+                  <span className="text-[10px] text-zinc-600 shrink-0">
+                    {format(new Date(msg.createdAt!), "HH:mm:ss")}
+                  </span>
+                </div>
+                <div className="flex items-start gap-2 w-full group/msg-content">
+                  <div className="flex-1 min-w-0">
+                    {msg.content && (
+                      <div className={`text-sm text-zinc-300 break-all overflow-wrap-anywhere whitespace-pre-wrap leading-relaxed ${msg.isDeleted ? 'line-through text-red-900' : ''}`} style={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }}>
+                        {renderContent(msg.content, msg.user.isCore)}
                       </div>
-                      <span className="text-[10px] text-zinc-600 shrink-0">
-                        {format(new Date(msg.createdAt!), "HH:mm:ss")}
-                      </span>
-                    </div>
-                    <div className="flex items-start gap-2 w-full group/msg-content">
-                      <div className="flex-1 min-w-0">
-                        {msg.content && (
-                          <div className={`text-sm text-zinc-300 break-all overflow-wrap-anywhere whitespace-pre-wrap leading-relaxed ${msg.isDeleted ? 'line-through text-red-900' : ''}`} style={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }}>
-                            {renderContent(msg.content)}
-                          </div>
-                        )}
+                    )}
                         {msg.imageUrl && (
                           <div className="relative mt-2 w-full max-w-[300px]">
                             <img 
@@ -200,18 +207,38 @@ export function ChatDrawer() {
                       {(isAdmin || msg.userId === user?.id) && (
                         <div className="flex-none shrink-0 self-start opacity-0 group-hover:opacity-100 transition-opacity">
                           {!msg.isDeleted ? (
-                            <Button 
-                              variant="ghost" 
-                              size="icon" 
-                              className="h-7 w-7 text-zinc-500 hover:text-red-500 hover:bg-red-500/10"
-                              onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                deleteMessage.mutate(msg.id);
-                              }}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
+                            <div className="flex gap-1">
+                              {user?.id !== msg.user.id && (
+                                <Button 
+                                  variant="ghost" 
+                                  size="icon" 
+                                  className="h-7 w-7 text-zinc-500 hover:text-cyan-400 hover:bg-cyan-400/10"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    if ((window as any).setSelectedUserForDM) {
+                                      (window as any).setSelectedUserForDM(msg.user);
+                                    }
+                                  }}
+                                >
+                                  <MessageSquare className="h-4 w-4" />
+                                </Button>
+                              )}
+                              {(isAdmin || msg.userId === user?.id) && (
+                                <Button 
+                                  variant="ghost" 
+                                  size="icon" 
+                                  className="h-7 w-7 text-zinc-500 hover:text-red-500 hover:bg-red-500/10"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    deleteMessage.mutate(msg.id);
+                                  }}
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              )}
+                            </div>
                           ) : (
                             isAdmin && (
                               <Button 

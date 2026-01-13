@@ -1,6 +1,6 @@
 import { db } from "./db";
-import { users, messages, type User, type InsertUser, type Message, type InsertMessage } from "@shared/schema";
-import { eq, desc, asc, and } from "drizzle-orm";
+import { users, messages, fanarts, directMessages, type User, type InsertUser, type Message, type InsertMessage, type Fanart, type DirectMessage } from "@shared/schema";
+import { eq, desc, asc, and, or } from "drizzle-orm";
 
 export interface IStorage {
   // User operations
@@ -16,6 +16,15 @@ export interface IStorage {
   deleteMessage(id: number): Promise<void>;
   restoreMessage(id: number): Promise<void>;
   getAllMessagesIncludingDeleted(): Promise<(Message & { user: User })[]>;
+
+  // Fanart operations
+  getPendingFanarts(): Promise<(Fanart & { user: User })[]>;
+  createFanart(userId: number, imageUrl: string): Promise<Fanart>;
+  updateFanartStatus(id: number, status: string): Promise<Fanart>;
+
+  // DM operations
+  getDirectMessages(user1Id: number, user2Id: number): Promise<DirectMessage[]>;
+  createDirectMessage(senderId: number, receiverId: number, content: string): Promise<DirectMessage>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -36,7 +45,6 @@ export class DatabaseStorage implements IStorage {
 
   async updateUser(id: number, updates: Partial<User>): Promise<User> {
     const updateData = { ...updates };
-    // Remove auto-generated fields if they leaked in
     delete (updateData as any).id;
     delete (updateData as any).createdAt;
 
@@ -90,6 +98,38 @@ export class DatabaseStorage implements IStorage {
   async getMessage(id: number): Promise<Message | undefined> {
     const [msg] = await db.select().from(messages).where(eq(messages.id, id));
     return msg;
+  }
+
+  async getPendingFanarts(): Promise<(Fanart & { user: User })[]> {
+    return await db.query.fanarts.findMany({
+      where: eq(fanarts.status, "pending"),
+      with: { user: true },
+      orderBy: [desc(fanarts.createdAt)]
+    });
+  }
+
+  async createFanart(userId: number, imageUrl: string): Promise<Fanart> {
+    const [fanart] = await db.insert(fanarts).values({ userId, imageUrl, status: "pending" }).returning();
+    return fanart;
+  }
+
+  async updateFanartStatus(id: number, status: string): Promise<Fanart> {
+    const [fanart] = await db.update(fanarts).set({ status }).where(eq(fanarts.id, id)).returning();
+    return fanart;
+  }
+
+  async getDirectMessages(user1Id: number, user2Id: number): Promise<DirectMessage[]> {
+    return await db.select().from(directMessages)
+      .where(or(
+        and(eq(directMessages.senderId, user1Id), eq(directMessages.receiverId, user2Id)),
+        and(eq(directMessages.senderId, user2Id), eq(directMessages.receiverId, user1Id))
+      ))
+      .orderBy(asc(directMessages.createdAt));
+  }
+
+  async createDirectMessage(senderId: number, receiverId: number, content: string): Promise<DirectMessage> {
+    const [dm] = await db.insert(directMessages).values({ senderId, receiverId, content }).returning();
+    return dm;
   }
 }
 
