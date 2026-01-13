@@ -64,17 +64,8 @@ export function UserAvatar({ user, className, showBadge = true }: UserAvatarProp
   const animationSrc = user.isCore && user.profileAnimation ? animations[user.profileAnimation] : null;
 
   return (
-    <div className="relative inline-block shrink-0 p-1 isolate">
-      {animationSrc && (
-        <div className="absolute inset-0 pointer-events-none z-[100] flex items-center justify-center translate-z-0">
-          <img 
-            src={animationSrc} 
-            alt="" 
-            className="w-[110%] h-[110%] max-w-none object-contain will-change-transform" 
-          />
-        </div>
-      )}
-      <div className="relative z-0">
+    <div className="relative inline-block shrink-0 p-1">
+      <div className="relative">
         <Avatar className={cn("h-10 w-10 border border-white/10 rounded-full bg-zinc-900 overflow-hidden", className)}>
           <AvatarImage 
             src={user.avatarUrl || undefined} 
@@ -84,6 +75,17 @@ export function UserAvatar({ user, className, showBadge = true }: UserAvatarProp
             {initials}
           </AvatarFallback>
         </Avatar>
+        
+        {animationSrc && (
+          <div className="absolute inset-0 pointer-events-none z-10 flex items-center justify-center">
+            <img 
+              src={animationSrc} 
+              alt="" 
+              className="w-[110%] h-[110%] max-w-none object-contain" 
+            />
+          </div>
+        )}
+
         {user.isCore && showBadge && (
           <div className="absolute -bottom-1 -right-1 bg-black rounded-full p-0.5 border border-yellow-500/50 z-20">
             <Star className="h-3 w-3 text-yellow-500 fill-yellow-500" />
