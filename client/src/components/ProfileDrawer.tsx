@@ -87,12 +87,13 @@ export function ProfileDrawer() {
 
   const renderBiography = (bio: string | null | undefined) => {
     if (!bio) return null;
-    const parts = bio.split(/((?:https?:\/\/[^\s]+))/g);
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    const parts = bio.split(urlRegex);
     return parts.map((part, i) => {
-      if (part.match(/https?:\/\/[^\s]+/)) {
+      if (part.match(urlRegex)) {
         if (!activeUser.isCore) return <span key={i}>{part}</span>;
         return (
-          <a key={i} href={part} target="_blank" rel="noopener noreferrer" className="text-cyan-400 hover:underline break-all">
+          <a key={i} href={part} target="_blank" rel="noopener noreferrer" className="text-cyan-400 hover:underline break-all relative z-50 pointer-events-auto" onClick={(e) => e.stopPropagation()}>
             {part}
           </a>
         );

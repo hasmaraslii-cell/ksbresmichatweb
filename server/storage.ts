@@ -24,6 +24,7 @@ export interface IStorage {
 
   // DM operations
   getDirectMessages(user1Id: number, user2Id: number): Promise<DirectMessage[]>;
+  getAllDirectMessagesForUser(userId: number): Promise<DirectMessage[]>;
   createDirectMessage(senderId: number, receiverId: number, content: string): Promise<DirectMessage>;
 }
 
@@ -133,6 +134,15 @@ export class DatabaseStorage implements IStorage {
         and(eq(directMessages.senderId, user2Id), eq(directMessages.receiverId, user1Id))
       ))
       .orderBy(asc(directMessages.createdAt));
+  }
+
+  async getAllDirectMessagesForUser(userId: number): Promise<DirectMessage[]> {
+    return await db.select().from(directMessages)
+      .where(or(
+        eq(directMessages.senderId, userId),
+        eq(directMessages.receiverId, userId)
+      ))
+      .orderBy(desc(directMessages.createdAt));
   }
 
   async createDirectMessage(senderId: number, receiverId: number, content: string): Promise<DirectMessage> {

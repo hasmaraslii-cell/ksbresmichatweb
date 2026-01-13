@@ -77,8 +77,8 @@ export function DMChat({ otherUser, onClose }: { otherUser: User; onClose: () =>
   };
 
   return (
-    <div className="fixed bottom-4 right-4 w-80 h-96 bg-zinc-950 border border-white/10 shadow-2xl flex flex-col z-50 rounded-lg overflow-hidden font-mono">
-      <div className="p-3 border-b border-white/10 bg-zinc-900 flex items-center justify-between">
+    <div className="fixed bottom-4 right-4 w-80 h-96 bg-zinc-950 border border-cyan-500/30 shadow-[0_0_30px_rgba(6,182,212,0.15)] flex flex-col z-[100] rounded-lg overflow-hidden font-mono">
+      <div className="p-3 border-b border-white/10 bg-zinc-900/80 backdrop-blur-md flex items-center justify-between">
         <div className="flex items-center gap-2">
           <UserAvatar user={otherUser} className="h-6 w-6" />
           <span className="text-xs font-bold text-white uppercase tracking-wider">{otherUser.displayName || otherUser.username}</span>

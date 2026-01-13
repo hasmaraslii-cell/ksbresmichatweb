@@ -148,6 +148,12 @@ export async function registerRoutes(
     res.status(201).json(dm);
   });
 
+  app.get("/api/dms/all", async (req, res) => {
+    if (!req.isAuthenticated()) return res.status(401).send("Unauthorized");
+    const messages = await storage.getAllDirectMessagesForUser((req.user as any).id);
+    res.json(messages);
+  });
+
   app.get("/api/dms/:otherId", async (req, res) => {
     if (!req.isAuthenticated()) return res.status(401).send("Unauthorized");
     const messages = await storage.getDirectMessages((req.user as any).id, parseInt(req.params.otherId));

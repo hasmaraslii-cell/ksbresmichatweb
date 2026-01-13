@@ -3,10 +3,11 @@ import { Link, useLocation } from "wouter";
 import { ProfileDrawer } from "@/components/ProfileDrawer";
 import { ChatDrawer } from "@/components/ChatDrawer";
 import { DMChat } from "@/components/DMChat";
+import { DMInbox } from "@/components/DMInbox";
 import { motion } from "framer-motion";
 import { BentoCard } from "@/components/BentoCard";
 import { Button } from "@/components/ui/button";
-import { Terminal, ShieldAlert, Activity, Users, Star } from "lucide-react";
+import { Terminal, ShieldAlert, Activity, Users, Star, Bell } from "lucide-react";
 import logoImg from "/images/logo.png";
 import { RankBadge } from "@/components/RankBadge";
 import { useEffect, useState } from "react";
@@ -16,6 +17,7 @@ export default function Dashboard() {
   const { user, isLoading } = useAuth();
   const [, setLocation] = useLocation();
   const [selectedUserForDM, setSelectedUserForDM] = useState<User | null>(null);
+  const [showDMInbox, setShowDMInbox] = useState(false);
 
   useEffect(() => {
     (window as any).setSelectedUserForDM = setSelectedUserForDM;
@@ -51,6 +53,14 @@ export default function Dashboard() {
         </div>
 
         <div className="flex items-center gap-4">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="text-zinc-400 hover:text-white hover:bg-white/5"
+            onClick={() => setShowDMInbox(true)}
+          >
+            <Bell className="h-5 w-5" />
+          </Button>
           <ChatDrawer />
         </div>
       </header>
@@ -135,6 +145,16 @@ export default function Dashboard() {
 
       {selectedUserForDM && (
         <DMChat otherUser={selectedUserForDM} onClose={() => setSelectedUserForDM(null)} />
+      )}
+
+      {showDMInbox && (
+        <DMInbox 
+          onClose={() => setShowDMInbox(false)} 
+          onSelectChat={(u) => {
+            setShowDMInbox(false);
+            setSelectedUserForDM(u);
+          }}
+        />
       )}
 
       {/* Footer Navigation Button - Removed as requested */}

@@ -64,13 +64,13 @@ export function UserAvatar({ user, className, showBadge = true }: UserAvatarProp
   const animationSrc = user.isCore && user.profileAnimation ? animations[user.profileAnimation] : null;
 
   return (
-    <div className="relative inline-block shrink-0">
+    <div className="relative inline-block shrink-0 overflow-visible">
       {animationSrc && (
-        <div className="absolute inset-[-5%] pointer-events-none z-10 overflow-visible">
-          <img src={animationSrc} alt="" className="w-full h-full object-contain scale-110" />
+        <div className="absolute inset-[-8%] pointer-events-none z-10 overflow-visible flex items-center justify-center">
+          <img src={animationSrc} alt="" className="w-[116%] h-[116%] max-w-none object-contain" />
         </div>
       )}
-      <div className="relative">
+      <div className="relative overflow-visible">
         <Avatar className={cn("h-10 w-10 border border-white/10 rounded-full bg-zinc-900", className)}>
           <AvatarImage 
             src={user.avatarUrl || undefined} 
