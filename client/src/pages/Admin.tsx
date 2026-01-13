@@ -98,174 +98,178 @@ export default function Admin() {
 
           <TabsContent value="personnel">
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-              <BentoCard className="p-0 border-white/10">
-                <Table>
-                  <TableHeader className="bg-white/5 hover:bg-white/5">
-                    <TableRow className="border-white/10 hover:bg-transparent">
-                      <TableHead className="text-zinc-500 font-mono uppercase text-[10px] tracking-widest">Agent</TableHead>
-                      <TableHead className="text-zinc-500 font-mono uppercase text-[10px] tracking-widest">Rank</TableHead>
-                      <TableHead className="text-zinc-500 font-mono uppercase text-[10px] tracking-widest">Role</TableHead>
-                      <TableHead className="text-zinc-500 font-mono uppercase text-[10px] tracking-widest">Core</TableHead>
-                      <TableHead className="text-zinc-500 font-mono uppercase text-[10px] tracking-widest">Status</TableHead>
-                      <TableHead className="text-zinc-500 font-mono uppercase text-[10px] tracking-widest text-right">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {users?.map((u) => (
-                      <TableRow key={u.id} className="border-white/5 hover:bg-white/[0.02]">
-                        <TableCell className="font-medium">
-                          <div className="flex items-center gap-3">
-                            <UserAvatar user={u as any} className="h-8 w-8" />
-                            <div>
-                              <div className="text-zinc-300 text-xs">{u.username}</div>
-                              <div className="text-zinc-600 text-[10px]">{u.displayName}</div>
-                            </div>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <select 
-                            defaultValue={u.rank || "Yolcu"} 
-                            onChange={async (e) => {
-                              try {
-                                await apiRequest("PATCH", `/api/admin/update-rank/${u.id}`, { rank: e.target.value });
-                                toast({ title: "Rütbe Güncellendi" });
-                                queryClient.invalidateQueries({ queryKey: ["/api/users"] });
-                              } catch (err) {
-                                toast({ title: "Hata", description: "Rütbe güncellenemedi", variant: "destructive" });
-                              }
-                            }}
-                            className="bg-black border border-white/10 text-zinc-400 text-[10px] uppercase font-mono px-2 py-1 outline-none focus:border-cyan-500"
-                          >
-                            <option value="Kurucu" disabled={u.username !== "Raith1905" && u.username !== "YAKEFBALL"}>Kurucu</option>
-                            <option value="Başlider" disabled={u.username !== "Raith1905" && u.username !== "YAKEFBALL"}>Başlider</option>
-                            <option value="Konsey Üyesi">Konsey Üyesi</option>
-                            <option value="General">General</option>
-                            <option value="Kurmay">Kurmay</option>
-                            <option value="Yönetici">Yönetici</option>
-                            <option value="Kaptan">Kaptan</option>
-                            <option value="Efsane">Efsane</option>
-                            <option value="Üstad">Üstad</option>
-                            <option value="Gözcü">Gözcü</option>
-                            <option value="Şövalye">Şövalye</option>
-                            <option value="Muhafız">Muhafız</option>
-                            <option value="Kıdemli">Kıdemli</option>
-                            <option value="Savaşçı">Savaşçı</option>
-                            <option value="Yaver">Yaver</option>
-                            <option value="Temsilci">Temsilci</option>
-                            <option value="Kaşif">Kaşif</option>
-                            <option value="Nefer">Nefer</option>
-                            <option value="Gönüllü">Gönüllü</option>
-                            <option value="Çırak">Çırak</option>
-                            <option value="Aday">Aday</option>
-                            <option value="Yolcu">Yolcu</option>
-                          </select>
-                        </TableCell>
-                        <TableCell>
-                          <span className={`text-xs uppercase ${u.role === 'admin' ? 'text-red-400 font-bold' : 'text-zinc-500'}`}>
-                            {u.role}
-                          </span>
-                        </TableCell>
-                        <TableCell>
-                          {u.isCore ? (
-                            <div className="flex flex-col">
-                              <span className="text-yellow-500 text-[10px] font-bold">CORE</span>
-                              {u.coreExpiry && (
-                                <span className="text-[8px] text-zinc-500">
-                                  Sona erme: {format(new Date(u.coreExpiry), "dd.MM.yyyy")}
-                                </span>
-                              )}
-                            </div>
-                          ) : (
-                            <Button 
-                              size="sm" 
-                              variant="ghost" 
-                              className="text-[10px] h-6 border border-yellow-900/30 text-yellow-600 hover:bg-yellow-950/20"
-                              onClick={() => giftCoreMutation.mutate(u.id)}
-                            >
-                              CORE YAP
-                            </Button>
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          {u.isDeleted ? (
-                            <span className="text-red-500 text-[10px] bg-red-950/20 px-2 py-1 border border-red-900/20">BANNED</span>
-                          ) : (
-                            <span className="text-green-500 text-[10px] bg-green-950/20 px-2 py-1 border border-green-900/20">ACTIVE</span>
-                          )}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => toggleUserDelete.mutate(u.id)}
-                            disabled={u.id === user.id}
-                            className={`
-                              h-8 px-3 text-xs tracking-wider uppercase border 
-                              ${u.isDeleted 
-                                ? 'border-green-900/30 text-green-500 hover:bg-green-950/30' 
-                                : 'border-red-900/30 text-red-500 hover:bg-red-950/30'
-                              }
-                            `}
-                          >
-                            {u.isDeleted ? <><CheckCircle className="mr-2 h-3 w-3" /> RESTORE</> : <><Ban className="mr-2 h-3 w-3" /> BAN</>}
-                          </Button>
-                        </TableCell>
+              <BentoCard className="p-0 border-white/10 overflow-hidden">
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader className="bg-white/5 hover:bg-white/5">
+                      <TableRow className="border-white/10 hover:bg-transparent">
+                        <TableHead className="text-zinc-500 font-mono uppercase text-[10px] tracking-widest min-w-[150px]">Agent</TableHead>
+                        <TableHead className="text-zinc-500 font-mono uppercase text-[10px] tracking-widest min-w-[120px]">Rank</TableHead>
+                        <TableHead className="text-zinc-500 font-mono uppercase text-[10px] tracking-widest hidden sm:table-cell">Role</TableHead>
+                        <TableHead className="text-zinc-500 font-mono uppercase text-[10px] tracking-widest">Core</TableHead>
+                        <TableHead className="text-zinc-500 font-mono uppercase text-[10px] tracking-widest hidden md:table-cell">Status</TableHead>
+                        <TableHead className="text-zinc-500 font-mono uppercase text-[10px] tracking-widest text-right">Actions</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                    </TableHeader>
+                    <TableBody>
+                      {users?.map((u) => (
+                        <TableRow key={u.id} className="border-white/5 hover:bg-white/[0.02]">
+                          <TableCell className="font-medium">
+                            <div className="flex items-center gap-3">
+                              <UserAvatar user={u as any} className="h-8 w-8" />
+                              <div className="min-w-0">
+                                <div className="text-zinc-300 text-xs truncate max-w-[80px] sm:max-w-none">{u.username}</div>
+                                <div className="text-zinc-600 text-[9px] truncate max-w-[80px] sm:max-w-none">{u.displayName}</div>
+                              </div>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <select 
+                              defaultValue={u.rank || "Yolcu"} 
+                              onChange={async (e) => {
+                                try {
+                                  await apiRequest("PATCH", `/api/admin/update-rank/${u.id}`, { rank: e.target.value });
+                                  toast({ title: "Rütbe Güncellendi" });
+                                  queryClient.invalidateQueries({ queryKey: ["/api/users"] });
+                                } catch (err) {
+                                  toast({ title: "Hata", description: "Rütbe güncellenemedi", variant: "destructive" });
+                                }
+                              }}
+                              className="bg-black border border-white/10 text-zinc-400 text-[9px] uppercase font-mono px-1 py-1 outline-none focus:border-cyan-500 w-full max-w-[100px]"
+                            >
+                              <option value="Kurucu" disabled={u.username !== "Raith1905" && u.username !== "YAKEFBALL"}>Kurucu</option>
+                              <option value="Başlider" disabled={u.username !== "Raith1905" && u.username !== "YAKEFBALL"}>Başlider</option>
+                              <option value="Konsey Üyesi">Konsey Üyesi</option>
+                              <option value="General">General</option>
+                              <option value="Kurmay">Kurmay</option>
+                              <option value="Yönetici">Yönetici</option>
+                              <option value="Kaptan">Kaptan</option>
+                              <option value="Efsane">Efsane</option>
+                              <option value="Üstad">Üstad</option>
+                              <option value="Gözcü">Gözcü</option>
+                              <option value="Şövalye">Şövalye</option>
+                              <option value="Muhafız">Muhafız</option>
+                              <option value="Kıdemli">Kıdemli</option>
+                              <option value="Savaşçı">Savaşçı</option>
+                              <option value="Yaver">Yaver</option>
+                              <option value="Temsilci">Temsilci</option>
+                              <option value="Kaşif">Kaşif</option>
+                              <option value="Nefer">Nefer</option>
+                              <option value="Gönüllü">Gönüllü</option>
+                              <option value="Çırak">Çırak</option>
+                              <option value="Aday">Aday</option>
+                              <option value="Yolcu">Yolcu</option>
+                            </select>
+                          </TableCell>
+                          <TableCell className="hidden sm:table-cell">
+                            <span className={`text-[10px] uppercase ${u.role === 'admin' ? 'text-red-400 font-bold' : 'text-zinc-500'}`}>
+                              {u.role}
+                            </span>
+                          </TableCell>
+                          <TableCell>
+                            {u.isCore ? (
+                              <div className="flex flex-col">
+                                <span className="text-yellow-500 text-[9px] font-bold">CORE</span>
+                                {u.coreExpiry && (
+                                  <span className="text-[7px] text-zinc-600 hidden sm:block">
+                                    {format(new Date(u.coreExpiry), "dd.MM.yy")}
+                                  </span>
+                                )}
+                              </div>
+                            ) : (
+                              <Button 
+                                size="sm" 
+                                variant="ghost" 
+                                className="text-[9px] h-6 px-1.5 border border-yellow-900/30 text-yellow-600 hover:bg-yellow-950/20"
+                                onClick={() => giftCoreMutation.mutate(u.id)}
+                              >
+                                CORE
+                              </Button>
+                            )}
+                          </TableCell>
+                          <TableCell className="hidden md:table-cell">
+                            {u.isDeleted ? (
+                              <span className="text-red-500 text-[9px] bg-red-950/20 px-1.5 py-0.5 border border-red-900/20">BANNED</span>
+                            ) : (
+                              <span className="text-green-500 text-[9px] bg-green-950/20 px-1.5 py-0.5 border border-green-900/20">ACTIVE</span>
+                            )}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => toggleUserDelete.mutate(u.id)}
+                              disabled={u.id === user.id}
+                              className={`
+                                h-7 px-2 text-[9px] tracking-wider uppercase border 
+                                ${u.isDeleted 
+                                  ? 'border-green-900/30 text-green-500 hover:bg-green-950/30' 
+                                  : 'border-red-900/30 text-red-500 hover:bg-red-950/30'
+                                }
+                              `}
+                            >
+                              {u.isDeleted ? <CheckCircle className="h-3.5 w-3.5" /> : <Ban className="h-3.5 w-3.5" />}
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
               </BentoCard>
             </motion.div>
           </TabsContent>
 
           <TabsContent value="intelligence">
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-              <BentoCard className="p-0 border-white/10">
-                <Table>
-                  <TableHeader className="bg-white/5 hover:bg-white/5">
-                    <TableRow className="border-white/10 hover:bg-transparent">
-                      <TableHead className="text-zinc-500 font-mono uppercase text-[10px] tracking-widest w-[180px]">Timestamp</TableHead>
-                      <TableHead className="text-zinc-500 font-mono uppercase text-[10px] tracking-widest w-[150px]">Sender</TableHead>
-                      <TableHead className="text-zinc-500 font-mono uppercase text-[10px] tracking-widest">Content</TableHead>
-                      <TableHead className="text-zinc-500 font-mono uppercase text-[10px] tracking-widest text-right">Recover</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {deletedMessages.map((m) => (
-                      <TableRow key={m.id} className="border-white/5 hover:bg-white/[0.02]">
-                        <TableCell className="text-zinc-500 text-xs font-mono">
-                          {format(new Date(m.createdAt!), "yyyy-MM-dd HH:mm:ss")}
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-2">
-                            <UserAvatar user={m.user} className="h-6 w-6" />
-                            <span className="text-xs text-zinc-400">{m.user.username}</span>
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-red-400/70 italic text-sm font-mono border-l-2 border-red-900/20 pl-4 py-4">
-                          {m.content}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => restoreMessage.mutate(m.id)}
-                            className="text-cyan-500 hover:text-cyan-300 hover:bg-cyan-950/20"
-                          >
-                            <Undo2 className="h-4 w-4" />
-                          </Button>
-                        </TableCell>
+              <BentoCard className="p-0 border-white/10 overflow-hidden">
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader className="bg-white/5 hover:bg-white/5">
+                      <TableRow className="border-white/10 hover:bg-transparent">
+                        <TableHead className="text-zinc-500 font-mono uppercase text-[10px] tracking-widest min-w-[120px]">Time</TableHead>
+                        <TableHead className="text-zinc-500 font-mono uppercase text-[10px] tracking-widest">Agent</TableHead>
+                        <TableHead className="text-zinc-500 font-mono uppercase text-[10px] tracking-widest">Data</TableHead>
+                        <TableHead className="text-zinc-500 font-mono uppercase text-[10px] tracking-widest text-right">Rec</TableHead>
                       </TableRow>
-                    ))}
-                    {deletedMessages.length === 0 && (
-                      <TableRow>
-                        <TableCell colSpan={4} className="h-24 text-center text-zinc-600 text-xs uppercase tracking-widest">
-                          No redacted intelligence found.
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
+                    </TableHeader>
+                    <TableBody>
+                      {deletedMessages.map((m) => (
+                        <TableRow key={m.id} className="border-white/5 hover:bg-white/[0.02]">
+                          <TableCell className="text-zinc-500 text-[10px] font-mono whitespace-nowrap">
+                            {format(new Date(m.createdAt!), "HH:mm:ss")}
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-2">
+                              <UserAvatar user={m.user} className="h-5 w-5" />
+                              <span className="text-[10px] text-zinc-400 truncate max-w-[60px]">{m.user.username}</span>
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-red-400/70 italic text-xs font-mono border-l border-red-900/10 pl-2 py-2 max-w-[150px] truncate">
+                            {m.content}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => restoreMessage.mutate(m.id)}
+                              className="h-7 w-7 text-cyan-500 hover:text-cyan-300 hover:bg-cyan-950/20"
+                            >
+                              <Undo2 className="h-3.5 w-3.5" />
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                      {deletedMessages.length === 0 && (
+                        <TableRow>
+                          <TableCell colSpan={4} className="h-24 text-center text-zinc-600 text-[10px] uppercase tracking-widest">
+                            No intelligence found.
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </TableBody>
+                  </Table>
+                </div>
               </BentoCard>
             </motion.div>
           </TabsContent>

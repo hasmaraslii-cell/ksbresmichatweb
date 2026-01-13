@@ -81,7 +81,7 @@ export function UserAvatar({ user, className, showBadge = true }: UserAvatarProp
             <img 
               src={animationSrc} 
               alt="" 
-              className="w-[125%] h-[125%] max-w-none object-contain" 
+              className="w-[135%] h-[135%] max-w-none object-contain" 
             />
           </div>
         )}
