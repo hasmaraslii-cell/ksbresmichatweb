@@ -1,5 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
+import { Star } from "lucide-react";
 import sakuraGif from "@assets/sakura_gyoiko_1768305112703.png";
 import mokokoGif from "@assets/mokoko_1768305112788.png";
 import bobaGif from "@assets/wingman_boba_1768305112577.png";
@@ -49,9 +50,10 @@ interface UserAvatarProps {
     profileAnimation?: string | null;
   };
   className?: string;
+  showBadge?: boolean;
 }
 
-export function UserAvatar({ user, className }: UserAvatarProps) {
+export function UserAvatar({ user, className, showBadge = true }: UserAvatarProps) {
   const initials = (user.displayName || user.username)
     .split(' ')
     .map(n => n[0])
@@ -68,15 +70,22 @@ export function UserAvatar({ user, className }: UserAvatarProps) {
           <img src={animationSrc} alt="" className="w-full h-full object-contain scale-110" />
         </div>
       )}
-      <Avatar className={cn("h-10 w-10 border border-white/10 rounded-full bg-zinc-900", className)}>
-        <AvatarImage 
-          src={user.avatarUrl || undefined} 
-          className="object-cover w-full h-full rounded-full" 
-        />
-        <AvatarFallback className="bg-zinc-900 text-zinc-400 font-mono text-xs rounded-full flex items-center justify-center w-full h-full">
-          {initials}
-        </AvatarFallback>
-      </Avatar>
+      <div className="relative">
+        <Avatar className={cn("h-10 w-10 border border-white/10 rounded-full bg-zinc-900", className)}>
+          <AvatarImage 
+            src={user.avatarUrl || undefined} 
+            className="object-cover w-full h-full rounded-full" 
+          />
+          <AvatarFallback className="bg-zinc-900 text-zinc-400 font-mono text-xs rounded-full flex items-center justify-center w-full h-full">
+            {initials}
+          </AvatarFallback>
+        </Avatar>
+        {user.isCore && showBadge && (
+          <div className="absolute -bottom-1 -right-1 bg-black rounded-full p-0.5 border border-yellow-500/50 z-20">
+            <Star className="h-3 w-3 text-yellow-500 fill-yellow-500" />
+          </div>
+        )}
+      </div>
     </div>
   );
 }

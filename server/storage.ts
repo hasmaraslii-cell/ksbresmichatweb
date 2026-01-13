@@ -108,6 +108,14 @@ export class DatabaseStorage implements IStorage {
     });
   }
 
+  async getApprovedFanarts(): Promise<(Fanart & { user: User })[]> {
+    return await db.query.fanarts.findMany({
+      where: eq(fanarts.status, "approved"),
+      with: { user: true },
+      orderBy: [desc(fanarts.createdAt)]
+    });
+  }
+
   async createFanart(userId: number, imageUrl: string): Promise<Fanart> {
     const [fanart] = await db.insert(fanarts).values({ userId, imageUrl, status: "pending" }).returning();
     return fanart;

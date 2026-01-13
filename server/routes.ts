@@ -136,6 +136,11 @@ export async function registerRoutes(
     res.status(201).json(fanart);
   });
 
+  app.get("/api/fanarts/approved", async (req, res) => {
+    const fanarts = await storage.getApprovedFanarts();
+    res.json(fanarts);
+  });
+
   app.get("/api/dms/:otherId", async (req, res) => {
     if (!req.isAuthenticated()) return res.status(401).send("Unauthorized");
     const messages = await storage.getDirectMessages((req.user as any).id, parseInt(req.params.otherId));
