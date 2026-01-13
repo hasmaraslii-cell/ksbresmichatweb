@@ -11,48 +11,79 @@ import { Upload, Star } from "lucide-react";
 export default function CoreApplication() {
   const { user } = useAuth();
   const { toast } = useToast();
-  const [imageUrl, setImageUrl] = useState("");
+  const [file, setFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target.files?.[0];
+    if (selectedFile) {
+      if (selectedFile.size > 10 * 1024 * 1024) {
+        toast({ title: "Dosya Çok Büyük", description: "Maksimum 10MB yükleyebilirsiniz.", variant: "destructive" });
+        return;
+      }
+      setFile(selectedFile);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewUrl(reader.result as string);
+      };
+      reader.readAsDataURL(selectedFile);
+    }
+  };
 
   const submitMutation = useMutation({
-    mutationFn: async (url: string) => {
-      const res = await apiRequest("POST", "/api/fanarts", { imageUrl: url });
+    mutationFn: async () => {
+      if (!previewUrl) return;
+      const res = await apiRequest("POST", "/api/fanarts", { imageUrl: previewUrl });
       return res.json();
     },
     onSuccess: () => {
       toast({ title: "Başvuru Gönderildi", description: "Fanartınız admin onayına sunuldu." });
-      setImageUrl("");
+      setFile(null);
+      setPreviewUrl(null);
     }
   });
 
   return (
-    <div className="p-6 max-w-2xl mx-auto space-y-6">
-      <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
+    <div className="p-6 max-w-2xl mx-auto space-y-6 text-zinc-300 font-mono">
+      <Card className="border-white/10 bg-black/50">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-2xl">
+          <CardTitle className="flex items-center gap-2 text-2xl text-white uppercase tracking-widest">
             <Star className="h-6 w-6 text-yellow-500 fill-yellow-500" />
             Core Başvurusu
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <p className="text-muted-foreground">
-            Core üye olmak için topluluğumuza özel bir Fanart hazırlayıp paylaşın. Adminlerimiz onayladığında Core yetkisine sahip olacaksınız!
+        <CardContent className="space-y-6">
+          <p className="text-zinc-500 text-sm leading-relaxed uppercase tracking-wider">
+            Ak Sangur topluluğuna özel bir Fanart hazırlayın. Onaylandığında 30 günlük Core üyeliği kazanırsınız.
           </p>
-          <div className="flex gap-2">
-            <Input 
-              placeholder="Fanart Görsel URL'si" 
-              value={imageUrl} 
-              onChange={(e) => setImageUrl(e.target.value)} 
-            />
-            <Button onClick={() => submitMutation.mutate(imageUrl)} disabled={submitMutation.isPending}>
+          
+          <div className="space-y-4">
+            <div className="relative border-2 border-dashed border-white/10 rounded-lg p-8 text-center hover:border-cyan-500/50 transition-colors">
+              <input 
+                type="file" 
+                accept="image/*" 
+                onChange={handleFileChange}
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+              />
+              {previewUrl ? (
+                <img src={previewUrl} alt="Preview" className="max-h-64 mx-auto rounded-md" />
+              ) : (
+                <div className="flex flex-col items-center gap-2 text-zinc-600">
+                  <Upload className="h-8 w-8" />
+                  <span className="text-xs uppercase tracking-widest">DOSYA SEÇ VEYA SÜRÜKLE</span>
+                </div>
+              )}
+            </div>
+
+            <Button 
+              className="w-full bg-cyan-950/50 text-cyan-400 border border-cyan-900/50 hover:bg-cyan-900/50 py-6"
+              onClick={() => submitMutation.mutate()} 
+              disabled={submitMutation.isPending || !previewUrl}
+            >
               <Upload className="mr-2 h-4 w-4" />
-              Gönder
+              BAŞVURUYU GÖNDER
             </Button>
           </div>
-          {imageUrl && (
-            <div className="mt-4 rounded-lg overflow-hidden border border-primary/10">
-              <img src={imageUrl} alt="Önizleme" className="w-full h-auto object-cover max-h-64" />
-            </div>
-          )}
         </CardContent>
       </Card>
 

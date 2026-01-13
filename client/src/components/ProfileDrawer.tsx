@@ -134,7 +134,11 @@ export function ProfileDrawer() {
                   <FormItem>
                     <FormLabel className="text-zinc-400 font-mono text-xs uppercase">Biyografi</FormLabel>
                     <FormControl>
-                      <Input {...field} className="bg-zinc-900/50 border-zinc-800 text-white font-mono focus:border-cyan-900" placeholder="Kendinden bahset..." />
+                      <textarea 
+                        {...field} 
+                        className="w-full min-h-[100px] p-3 bg-zinc-900/50 border border-zinc-800 text-white font-mono focus:border-cyan-900 rounded-md outline-none resize-none" 
+                        placeholder="Kendinden bahset..." 
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -160,6 +164,18 @@ export function ProfileDrawer() {
                           <option value="bunny">Freezer Bunny</option>
                           <option value="clown">Clown Fun</option>
                           <option value="los_santos">City of Los Santos</option>
+                          <option value="gawblehop">Gawblehop</option>
+                          <option value="glop">Glop</option>
+                          <option value="chewbert">Chewbert</option>
+                          <option value="doodlezard">Doodlezard</option>
+                          <option value="winkle">Winkle</option>
+                          <option value="chuck">Chuck</option>
+                          <option value="beamchop">Beamchop</option>
+                          <option value="stinkums">Stinkums</option>
+                          <option value="scrumptious">Scrumptious</option>
+                          <option value="panic">Panic</option>
+                          <option value="nervous">Nervous</option>
+                          <option value="awe">Awe</option>
                         </select>
                       </FormControl>
                       <FormMessage />

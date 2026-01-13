@@ -123,7 +123,26 @@ export default function Admin() {
                           </div>
                         </TableCell>
                         <TableCell>
-                          <RankBadge rank={u.rank} />
+                          <select 
+                            defaultValue={u.rank || "Aday"} 
+                            onChange={async (e) => {
+                              try {
+                                await apiRequest("PATCH", `/api/admin/update-rank/${u.id}`, { rank: e.target.value });
+                                toast({ title: "Rütbe Güncellendi" });
+                                queryClient.invalidateQueries({ queryKey: ["/api/users"] });
+                              } catch (err) {
+                                toast({ title: "Hata", description: "Rütbe güncellenemedi", variant: "destructive" });
+                              }
+                            }}
+                            className="bg-black border border-white/10 text-zinc-400 text-[10px] uppercase font-mono px-2 py-1 outline-none focus:border-cyan-500"
+                          >
+                            <option value="Kurucu">Kurucu</option>
+                            <option value="Başlider">Başlider</option>
+                            <option value="Lider">Lider</option>
+                            <option value="Kıdemli">Kıdemli</option>
+                            <option value="Üye">Üye</option>
+                            <option value="Aday">Aday</option>
+                          </select>
                         </TableCell>
                         <TableCell>
                           <span className={`text-xs uppercase ${u.role === 'admin' ? 'text-red-400 font-bold' : 'text-zinc-500'}`}>
@@ -268,21 +287,6 @@ export default function Admin() {
                 </div>
               )}
             </motion.div>
-            
-            {/* Profil Animasyon Seçici */}
-            <div className="mt-12 space-y-6">
-              <h2 className="text-lg font-bold tracking-widest text-white uppercase border-b border-white/10 pb-2">PROFİL ANİMASYON_YÖNETİMİ</h2>
-              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                {[
-                  "sakura", "mokoko", "boba", "bunny", "clown", "los_santos"
-                ].map((anim) => (
-                  <BentoCard key={anim} className="p-2 border-white/5 hover:border-cyan-500/30 transition-colors flex flex-col items-center gap-2">
-                    <div className="text-[10px] uppercase font-mono text-zinc-500">{anim}</div>
-                    <Button size="sm" variant="ghost" className="w-full text-[9px] h-7 border border-white/5">YÜKLE</Button>
-                  </BentoCard>
-                ))}
-              </div>
-            </div>
           </TabsContent>
         </Tabs>
       </div>

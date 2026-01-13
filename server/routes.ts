@@ -95,6 +95,16 @@ export async function registerRoutes(
     res.json(updated);
   });
 
+  app.patch("/api/admin/update-rank/:id", async (req, res) => {
+    if (!req.isAuthenticated() || (req.user as any).role !== 'admin') {
+      return res.status(401).send("Unauthorized");
+    }
+    const userId = parseInt(req.params.id);
+    const { rank } = req.body;
+    const updated = await storage.updateUser(userId, { rank });
+    res.json(updated);
+  });
+
   app.get("/api/admin/fanarts", async (req, res) => {
     if (!req.isAuthenticated() || (req.user as any).role !== 'admin') {
       return res.status(401).send("Unauthorized");
