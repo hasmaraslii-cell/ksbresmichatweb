@@ -35,8 +35,7 @@ export function DMInbox({ onSelectChat }: DMInboxProps) {
 
   const conversationUsers = users?.filter(u => 
     u.id !== user?.id && 
-    (lastMessages[u.id] || 
-     u.username.toLowerCase().includes(search.toLowerCase()) || 
+    (u.username.toLowerCase().includes(search.toLowerCase()) || 
      u.displayName?.toLowerCase().includes(search.toLowerCase()))
   ).sort((a, b) => {
     const timeA = lastMessages[a.id] ? new Date(lastMessages[a.id].createdAt!).getTime() : 0;

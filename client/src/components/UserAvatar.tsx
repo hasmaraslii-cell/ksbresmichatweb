@@ -64,14 +64,18 @@ export function UserAvatar({ user, className, showBadge = true }: UserAvatarProp
   const animationSrc = user.isCore && user.profileAnimation ? animations[user.profileAnimation] : null;
 
   return (
-    <div className="relative inline-block shrink-0 overflow-visible p-1">
+    <div className="relative inline-block shrink-0 p-1 isolate">
       {animationSrc && (
-        <div className="absolute inset-0 pointer-events-none z-10 overflow-visible flex items-center justify-center">
-          <img src={animationSrc} alt="" className="w-[110%] h-[110%] max-w-none object-contain" />
+        <div className="absolute inset-0 pointer-events-none z-[100] flex items-center justify-center translate-z-0">
+          <img 
+            src={animationSrc} 
+            alt="" 
+            className="w-[110%] h-[110%] max-w-none object-contain will-change-transform" 
+          />
         </div>
       )}
-      <div className="relative overflow-visible">
-        <Avatar className={cn("h-10 w-10 border border-white/10 rounded-full bg-zinc-900", className)}>
+      <div className="relative z-0">
+        <Avatar className={cn("h-10 w-10 border border-white/10 rounded-full bg-zinc-900 overflow-hidden", className)}>
           <AvatarImage 
             src={user.avatarUrl || undefined} 
             className="object-cover w-full h-full rounded-full" 
