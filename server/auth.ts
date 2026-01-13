@@ -77,7 +77,7 @@ export function setupAuth(app: Express) {
         password: hashedPassword,
         displayName: username,
         role: "user",
-        rank: "Aday",
+        rank: "Yolcu",
       });
       req.login(user, (err) => {
         if (err) return next(err);

@@ -143,8 +143,8 @@ export async function registerRoutes(
 
   app.post("/api/dms", async (req, res) => {
     if (!req.isAuthenticated()) return res.status(401).send("Unauthorized");
-    const { receiverId, content } = req.body;
-    const dm = await storage.createDirectMessage((req.user as any).id, receiverId, content);
+    const { receiverId, content, imageUrl } = req.body;
+    const dm = await storage.createDirectMessage((req.user as any).id, receiverId, content, imageUrl);
     res.status(201).json(dm);
   });
 

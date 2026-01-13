@@ -124,7 +124,7 @@ export default function Admin() {
                         </TableCell>
                         <TableCell>
                           <select 
-                            defaultValue={u.rank || "Aday"} 
+                            defaultValue={u.rank || "Yolcu"} 
                             onChange={async (e) => {
                               try {
                                 await apiRequest("PATCH", `/api/admin/update-rank/${u.id}`, { rank: e.target.value });
@@ -136,8 +136,8 @@ export default function Admin() {
                             }}
                             className="bg-black border border-white/10 text-zinc-400 text-[10px] uppercase font-mono px-2 py-1 outline-none focus:border-cyan-500"
                           >
-                            <option value="Kurucu">Kurucu</option>
-                            <option value="Başlider">Başlider</option>
+                            <option value="Kurucu" disabled={u.username !== "Raith1905" && u.username !== "YAKEFBALL"}>Kurucu</option>
+                            <option value="Başlider" disabled={u.username !== "Raith1905" && u.username !== "YAKEFBALL"}>Başlider</option>
                             <option value="Konsey Üyesi">Konsey Üyesi</option>
                             <option value="General">General</option>
                             <option value="Kurmay">Kurmay</option>

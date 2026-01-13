@@ -145,8 +145,8 @@ export class DatabaseStorage implements IStorage {
       .orderBy(desc(directMessages.createdAt));
   }
 
-  async createDirectMessage(senderId: number, receiverId: number, content: string): Promise<DirectMessage> {
-    const [dm] = await db.insert(directMessages).values({ senderId, receiverId, content }).returning();
+  async createDirectMessage(senderId: number, receiverId: number, content: string, imageUrl?: string): Promise<DirectMessage> {
+    const [dm] = await db.insert(directMessages).values({ senderId, receiverId, content, imageUrl: imageUrl || null }).returning();
     return dm;
   }
 }
